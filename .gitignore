@@ -79,3 +79,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+Library
+Temp
+ProjectSettings
+Assets/Editor
+Assets/Standard Assets
+Assets/UnityVS
