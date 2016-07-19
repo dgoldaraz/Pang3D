@@ -90,4 +90,13 @@ public class BallScript : MonoBehaviour {
         }
         m_rigidBody.AddForce(new Vector3(Mathf.Sin(degreeAngle) * force, Mathf.Cos(degreeAngle) * force, 0.0f));
     }
+    /// <summary>
+    /// Pause the ball
+    /// </summary>
+    public void Pause()
+    {
+        m_rigidBody.velocity = Vector3.zero;
+        m_rigidBody.angularVelocity = Vector3.zero;
+        m_rigidBody.useGravity = false;
+    }
 }

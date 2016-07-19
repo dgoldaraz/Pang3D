@@ -6,6 +6,9 @@ using System.Collections;
 /// 
 public class Player : MonoBehaviour {
 
+    public delegate void PlayerHit(GameObject player);
+    public static event PlayerHit onPlayerHit;
+
     public KeyCode rightKey;
     public KeyCode leftKey;
     public KeyCode upKey;
@@ -21,6 +24,8 @@ public class Player : MonoBehaviour {
 
     enum LadderState {Top, Bottom, Middle, None };
     private LadderState m_ladderState = LadderState.None;
+
+    private int m_lives = 3;
 
 
 	// Use this for initialization
@@ -96,5 +101,50 @@ public class Player : MonoBehaviour {
     void Shoot()
     {
         Debug.Log("Shoot");
+    }
+    /// <summary>
+    /// set the number of lives for the player
+    /// </summary>
+    /// <param name="nLives"></param>
+    public void setLives(int nLives)
+    {
+        m_lives = nLives;
+    }
+    /// <summary>
+    /// Get the number of livesin the player
+    /// </summary>
+    /// <returns></returns>
+    public int getLives()
+    {
+        return m_lives;
+    }
+    /// <summary>
+    /// Add one live to the player
+    /// </summary>
+    public void addLives()
+    {
+        m_lives++;
+    }
+    /// <summary>
+    /// Deals with the collisions. Mainly it can be or an item or a ball
+    /// </summary>
+    /// <param name="coll"></param>
+    void OnCollisionEnter(Collision coll)
+    {
+        if(coll.gameObject.CompareTag("Ball"))
+        {
+            Debug.Log("Dead, you have " + m_lives);
+            m_lives--;
+            if(onPlayerHit != null)
+            {
+                onPlayerHit(gameObject);
+            }
+
+            if(m_lives == 0)
+            {
+                //disappear
+                Destroy(gameObject);
+            }
+        }
     }
 }
