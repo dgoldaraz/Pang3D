@@ -67,14 +67,14 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        if(endGame)
+        if(endGame || numLives == 0)
         {
             //
             Debug.Log("Game Ends!! You Lost");
-           
         }
         else
         {
+            numLives--;
             //Pause Everything!
             Debug.Log("Pause Things!");
             BallScript[] balls = FindObjectsOfType<BallScript>();
