@@ -4,7 +4,8 @@ using System.Collections;
 /// Player Behaviour
 /// </summary>
 /// 
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour
+{
 
     public delegate void PlayerHit(GameObject player);
     public static event PlayerHit onPlayerHit;
@@ -22,29 +23,29 @@ public class Player : MonoBehaviour {
     private float m_xmax;
     private float m_xmin;
 
-    enum LadderState {Top, Bottom, Middle, None };
-    private LadderState m_ladderState = LadderState.None;
+    private Elevator m_elevator = null;
 
     private int m_lives = 3;
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
 
         //Calculate the limits of the viewport depending on the camera
-        float distance = transform.position.z - Camera.main.transform.position.z; 
+        float distance = transform.position.z - Camera.main.transform.position.z;
         Vector3 leftMost = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, distance));
         Vector3 rightMost = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, distance));
         //Apply a padding of the walls
         m_xmax = rightMost.x - padding;
         m_xmin = leftMost.x + padding;
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
         Move();
-	}
+    }
     /// <summary>
     /// Function that deals with the movement of the player
     /// </summary>
@@ -53,41 +54,38 @@ public class Player : MonoBehaviour {
         Vector3 newPos = transform.position;
         bool movement = false;
 
-        if(m_ladderState != LadderState.Middle && Input.GetKey(rightKey))
+        if (Input.GetKey(rightKey))
         {
             //Right
             movement = true;
             newPos += Vector3.right * speed * Time.deltaTime;
         }
-        else if(m_ladderState != LadderState.Middle && Input.GetKey(leftKey))
+        else if (Input.GetKey(leftKey))
         {
             //Left
             movement = true;
             newPos += Vector3.left * speed * Time.deltaTime;
         }
-        else if(m_ladderState != LadderState.None)
+        else if (Input.GetKey(upKey))
         {
-            //We are in a ladder
-            if (m_ladderState != LadderState.Top && Input.GetKey(upKey))
+            if (m_elevator != null)
             {
-                //Go up 
-                movement = true;
-                newPos += Vector3.up * speed * Time.deltaTime;
-            }
-            else if (m_ladderState != LadderState.Bottom && Input.GetKey(downKey))
-            {
-                //Gop down
-                movement = true;
-                newPos += Vector3.down * speed * Time.deltaTime;
+                m_elevator.GoUp();
             }
         }
-       
-        if(movement)
+        else if (Input.GetKey(downKey))
+        {
+            if (m_elevator != null)
+            {
+                m_elevator.GoDown();
+            }
+        }
+
+        if (movement)
         {
             newPos.x = Mathf.Clamp(newPos.x, m_xmin, m_xmax);
             this.transform.position = newPos;
         }
-
 
         if (Input.GetKeyDown(shootKey))
         {
@@ -126,25 +124,43 @@ public class Player : MonoBehaviour {
         m_lives++;
     }
     /// <summary>
-    /// Deals with the collisions. Mainly it can be or an item or a ball
+    /// Deals with the collisions. Mainly it can be or an item or a ball or elevator
     /// </summary>
     /// <param name="coll"></param>
     void OnCollisionEnter(Collision coll)
     {
-        if(coll.gameObject.CompareTag("Ball"))
+        if (coll.gameObject.CompareTag("Ball"))
         {
             Debug.Log("Dead, you have " + m_lives);
             m_lives--;
-            if(onPlayerHit != null)
+            if (onPlayerHit != null)
             {
                 onPlayerHit(gameObject);
             }
 
-            if(m_lives == 0)
+            if (m_lives == 0)
             {
                 //disappear
                 Destroy(gameObject);
             }
+        }
+        if (coll.gameObject.CompareTag("Paddle"))
+        {
+            //Get the elevator
+            m_elevator = coll.gameObject.GetComponentInParent<Elevator>();
+        }
+    }
+
+    /// <summary>
+    ///  Deals with the exit state of a collision
+    /// </summary>
+    /// <param name="coll"></param>
+    void OnCollisionExit(Collision coll)
+    {
+        if (coll.gameObject.CompareTag("Paddle"))
+        {
+            //Get the elevator
+            m_elevator = null;
         }
     }
 }
