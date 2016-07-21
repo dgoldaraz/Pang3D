@@ -27,6 +27,9 @@ public class Player : MonoBehaviour
 
     private int m_lives = 3;
 
+    public GameObject weapon;
+    public GameObject peepHole;
+
 
     // Use this for initialization
     void Start()
@@ -98,7 +101,12 @@ public class Player : MonoBehaviour
     /// </summary>
     void Shoot()
     {
-        Debug.Log("Shoot");
+        if(weapon)
+        {
+            GameObject go = Instantiate(weapon, peepHole.transform.position, Quaternion.identity) as GameObject;
+            go.GetComponent<Weapon>().Shoot(gameObject);
+        }
+       
     }
     /// <summary>
     /// set the number of lives for the player
