@@ -3,6 +3,7 @@ using System.Collections;
 /// <summary>
 /// This class defines a weapon type and how it shooths
 /// </summary>
+[RequireComponent(typeof(Rigidbody))]
 public class Weapon : MonoBehaviour {
 
     // Use this for initialization
@@ -15,7 +16,7 @@ public class Weapon : MonoBehaviour {
 
     }
 
-    public virtual void Shoot(GameObject player)
+    public virtual void Shoot(GameObject player, Vector3 initPos)
     {
         Debug.Log(player.name + " Shoots me");
     }

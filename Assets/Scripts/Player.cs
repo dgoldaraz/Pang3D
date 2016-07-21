@@ -4,6 +4,8 @@ using System.Collections;
 /// Player Behaviour
 /// </summary>
 /// 
+
+[RequireComponent(typeof(Rigidbody))]
 public class Player : MonoBehaviour
 {
 
@@ -29,6 +31,8 @@ public class Player : MonoBehaviour
 
     public GameObject weapon;
     public GameObject peepHole;
+
+    private bool m_canShoot = true;
 
 
     // Use this for initialization
@@ -90,7 +94,7 @@ public class Player : MonoBehaviour
             this.transform.position = newPos;
         }
 
-        if (Input.GetKeyDown(shootKey))
+        if (Input.GetKeyDown(shootKey) && m_canShoot)
         {
             Shoot();
         }
@@ -104,7 +108,7 @@ public class Player : MonoBehaviour
         if(weapon)
         {
             GameObject go = Instantiate(weapon, peepHole.transform.position, Quaternion.identity) as GameObject;
-            go.GetComponent<Weapon>().Shoot(gameObject);
+            go.GetComponent<Weapon>().Shoot(gameObject, peepHole.transform.position);
         }
        
     }
@@ -170,5 +174,10 @@ public class Player : MonoBehaviour
             //Get the elevator
             m_elevator = null;
         }
+    }
+
+    public void setCanShoot(bool s)
+    {
+        m_canShoot = s;
     }
 }

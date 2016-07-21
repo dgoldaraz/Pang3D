@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
         {
             //Destroy duplicate Instances
             Destroy(this.gameObject);
+            instance.Initialize();
         }
         else
         {
@@ -33,18 +34,21 @@ public class GameManager : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-
+        Initialize();
+    }
+	
+    void Initialize()
+    {
         //Add a listerner to the player hit
         Player.onPlayerHit += updatePlayersHit;
 
         //Save all the players on the level
         m_players = FindObjectsOfType<Player>();
-        foreach(Player p in m_players)
+        foreach (Player p in m_players)
         {
             p.setLives(numLives);
         }
     }
-	
 	// Update is called once per frame
 	void Update () {
 	

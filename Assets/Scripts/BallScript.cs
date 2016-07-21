@@ -13,9 +13,11 @@ public class BallScript : MonoBehaviour {
 
     public float forceMultiplier = 100.0f;
     public float startForce = 100.0f;
-    // Use this for initialization
-    void Start () {
 
+   
+    // Use this for initialization
+    void Start ()
+    {
         //Start whith a random left/right movement
         m_rigidBody = this.GetComponent<Rigidbody>();
            
@@ -32,16 +34,16 @@ public class BallScript : MonoBehaviour {
 	void Update ()
     {
         //Check the velocity to not exceed some values and it's not completely vertical
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Split();
-        }
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Split();
+        //}
 	}
     /// <summary>
     /// Split the ball in two small balls
     /// Adds some forces to the new ones
     /// </summary>
-    void Split()
+    public void Split()
     {
         //Split the ball in two small ones and dissapear
         if (this.transform.localScale.x == 0.5)
@@ -51,7 +53,7 @@ public class BallScript : MonoBehaviour {
         }
         else
         {
-            
+            Destroy(this.gameObject);
             float nextScale = this.transform.localScale.x * 0.5f;
             if(nextScale > 1.0f)
             {
@@ -73,7 +75,7 @@ public class BallScript : MonoBehaviour {
             ch1.GetComponent<Rigidbody>().AddForce( new Vector3(Mathf.Sin(randomAngle) * forceMultiplier, Mathf.Cos(randomAngle) * forceMultiplier, 0.0f));
             ch2.GetComponent<Rigidbody>().AddForce( new Vector3(Mathf.Sin(inverseAngle) * forceMultiplier, Mathf.Cos(inverseAngle) * forceMultiplier, 0.0f));
 
-            Destroy(this.gameObject);
+            
         }
     }
     /// <summary>
@@ -95,6 +97,10 @@ public class BallScript : MonoBehaviour {
     /// </summary>
     public void Pause()
     {
+        if(!m_rigidBody)
+        {
+            m_rigidBody = this.GetComponent<Rigidbody>();
+        }
         m_rigidBody.velocity = Vector3.zero;
         m_rigidBody.angularVelocity = Vector3.zero;
         m_rigidBody.useGravity = false;
