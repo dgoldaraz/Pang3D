@@ -3,6 +3,11 @@ using System.Collections;
 
 public class DoubleHookWeapon : HookWeapon {
 
+    /// <summary>
+    /// Only allows the user to shoot if there are less than 2 hooks in the scene
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="initPos"></param>
     public override void Shoot(GameObject player, Vector3 initPos)
     {
         base.Shoot(player, initPos);

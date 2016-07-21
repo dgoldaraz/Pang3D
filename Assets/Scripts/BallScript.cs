@@ -14,7 +14,12 @@ public class BallScript : MonoBehaviour {
     public float forceMultiplier = 100.0f;
     public float startForce = 100.0f;
 
-   
+    public Vector3 cVelocity;
+    public Vector3 cAngularVelocity;
+
+    public float blinkingTime = 1.0f;
+
+
     // Use this for initialization
     void Start ()
     {
@@ -95,14 +100,41 @@ public class BallScript : MonoBehaviour {
     /// <summary>
     /// Pause the ball
     /// </summary>
-    public void Pause()
+    public void Pause(float time)
     {
         if(!m_rigidBody)
         {
             m_rigidBody = this.GetComponent<Rigidbody>();
         }
+        cVelocity = m_rigidBody.velocity;
         m_rigidBody.velocity = Vector3.zero;
+        cAngularVelocity = m_rigidBody.angularVelocity;
         m_rigidBody.angularVelocity = Vector3.zero;
         m_rigidBody.useGravity = false;
+
+        if(time != -1)
+        {
+            StartCoroutine(RestartBlinking(time));
+        }
+    }
+
+    IEnumerator RestartBlinking(float time)
+    {
+        yield return new WaitForSeconds(time - blinkingTime);
+        InvokeRepeating("Blink", 0, 0.2f);
+        StartCoroutine(Restart(blinkingTime));
+    }
+
+    IEnumerator Restart(float time)
+    {
+        yield return new WaitForSeconds(time);
+        m_rigidBody.velocity = cVelocity;
+        m_rigidBody.angularVelocity = cAngularVelocity;
+        m_rigidBody.useGravity = true;
+    }
+
+    public void Dynamite()
+    {
+        Debug.Log("BOOOOM");
     }
 }

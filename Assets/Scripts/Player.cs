@@ -180,4 +180,12 @@ public class Player : MonoBehaviour
     {
         m_canShoot = s;
     }
+    /// <summary>
+    /// Sets the weapon that the user will use
+    /// </summary>
+    /// <param name="w"></param>
+    public void SetWeapon(GameObject w)
+    {
+        weapon = w;
+    }
 }

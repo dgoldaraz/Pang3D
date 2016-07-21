@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 public class GrabHookWeapon : HookWeapon
 {
-
+    /// <summary>
+    /// Override of the collision enter to stop the hook
+    /// </summary>
+    /// <param name="coll"></param>
     protected override void OnCollisionEnter(Collision coll)
     {
         if (coll.gameObject.CompareTag("Wall"))
@@ -17,6 +20,10 @@ public class GrabHookWeapon : HookWeapon
         }
     }
 
+    /// <summary>
+    /// Change color to advise it's close to dissappear
+    /// </summary>
+    /// <returns></returns>
     IEnumerator ChangeColourOnTIme()
     {
         yield return new WaitForSeconds(1);
@@ -29,6 +36,10 @@ public class GrabHookWeapon : HookWeapon
         StartCoroutine(DestroyOnTime());
     }
 
+    /// <summary>
+    /// destroy the grabhook and allow to whoot again
+    /// </summary>
+    /// <returns></returns>
     IEnumerator DestroyOnTime()
     {
         yield return new WaitForSeconds(1);

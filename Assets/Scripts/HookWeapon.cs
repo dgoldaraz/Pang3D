@@ -32,6 +32,7 @@ public class HookWeapon : Weapon {
         m_partHeight = m_capsuleCollider.height * transform.localScale.y;
         m_initialHeight = m_capsuleCollider.height;
         m_partList = new List<GameObject>();
+        GetComponent<Rigidbody>().useGravity = false;
     }
 	
 	// Update is called once per frame
@@ -53,11 +54,18 @@ public class HookWeapon : Weapon {
         m_player.GetComponent<Player>().setCanShoot(false);
     }
 
+    /// <summary>
+    /// sets if the hook is moving or not
+    /// </summary>
+    /// <param name="m"></param>
     public void setMovement(bool m)
     {
         m_move = m;
     }
 
+    /// <summary>
+    /// Move the hook up
+    /// </summary>
     void Move()
     {
         if(m_move)
@@ -75,6 +83,10 @@ public class HookWeapon : Weapon {
         }
     }
 
+    /// <summary>
+    /// Create a part to simulate a chain, 
+    /// Updates the capculecollider to split balls
+    /// </summary>
     void CreatePart()
     {
         //Create a new object and reparent to the last part created
@@ -93,6 +105,10 @@ public class HookWeapon : Weapon {
         
     }
 
+    /// <summary>
+    /// Deals with collisitons
+    /// </summary>
+    /// <param name="coll"></param>
     protected virtual void OnCollisionEnter(Collision coll)
     {
         if(m_player)

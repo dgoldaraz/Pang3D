@@ -7,15 +7,16 @@ using System.Collections;
 public class Weapon : MonoBehaviour {
 
     // Use this for initialization
-    void Start() {
-
+    void Start()
+    {
+        GetComponent<Rigidbody>().useGravity = false;
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
+    /// <summary>
+    /// Generic shooting
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="initPos"></param>
     public virtual void Shoot(GameObject player, Vector3 initPos)
     {
         Debug.Log(player.name + " Shoots me");

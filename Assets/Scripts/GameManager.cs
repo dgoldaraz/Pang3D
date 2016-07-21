@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour {
             BallScript[] balls = FindObjectsOfType<BallScript>();
             foreach(BallScript b in balls)
             {
-                b.Pause();
+                b.Pause(-1);
             }
             StartCoroutine(Restart());
         }
