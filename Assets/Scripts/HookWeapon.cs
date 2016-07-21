@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
+[RequireComponent(typeof(CapsuleCollider))]
 public class HookWeapon : Weapon {
 
     private bool m_move = false;
-    private GameObject m_player;
+    protected GameObject m_player;
     private float m_amount = 0.0f;
 
     private GameObject m_lastPart = null;
@@ -21,6 +22,8 @@ public class HookWeapon : Weapon {
 
     private bool isDestroyed = false;
 
+    List<GameObject> m_partList;
+
     // Use this for initialization
     void Start ()
     {
@@ -28,6 +31,7 @@ public class HookWeapon : Weapon {
         m_capsuleCollider = GetComponent<CapsuleCollider>();
         m_partHeight = m_capsuleCollider.height * transform.localScale.y;
         m_initialHeight = m_capsuleCollider.height;
+        m_partList = new List<GameObject>();
     }
 	
 	// Update is called once per frame
@@ -47,6 +51,11 @@ public class HookWeapon : Weapon {
         m_player = player;
         m_initialPosition = initPos;
         m_player.GetComponent<Player>().setCanShoot(false);
+    }
+
+    public void setMovement(bool m)
+    {
+        m_move = m;
     }
 
     void Move()
@@ -70,6 +79,7 @@ public class HookWeapon : Weapon {
     {
         //Create a new object and reparent to the last part created
         GameObject newPart = Instantiate(part, m_initialPosition, Quaternion.identity) as GameObject;
+        m_partList.Add(newPart);
         newPart.transform.parent = m_lastPart.transform;
         m_lastPart = newPart;
         float heightToAdd = newPart.GetComponent<CapsuleCollider>().height;
@@ -80,9 +90,10 @@ public class HookWeapon : Weapon {
         newCenter.y = -newHeight * 0.5f;
         m_capsuleCollider.center = newCenter;
         m_amount = 0.0f;
+        
     }
 
-    void OnCollisionEnter(Collision coll)
+    protected virtual void OnCollisionEnter(Collision coll)
     {
         if(m_player)
         {
@@ -94,6 +105,13 @@ public class HookWeapon : Weapon {
         }
         isDestroyed = true;
         Destroy(gameObject);
-        
+    }
+    /// <summary>
+    /// Returns the parts created
+    /// </summary>
+    /// <returns></returns>
+    public List<GameObject> getParts()
+    {
+        return m_partList;
     }
 }
