@@ -19,6 +19,12 @@ public class BallScript : MonoBehaviour {
 
     public float blinkingTime = 1.0f;
 
+    private new MeshRenderer renderer;
+    private bool m_isOnPause = false;
+
+    private bool m_OnDinamite = false;
+    private float m_timeToSplit = 0.0f;
+
 
     // Use this for initialization
     void Start ()
@@ -32,7 +38,7 @@ public class BallScript : MonoBehaviour {
             startAngle = Random.Range(30.0f, 80.0f);
         }
         ApplyForceInAngle(startAngle, startForce);
-	
+        renderer = GetComponent<MeshRenderer>();
 	}
 	
 	// Update is called once per frame
@@ -54,7 +60,16 @@ public class BallScript : MonoBehaviour {
         if (this.transform.localScale.x == 0.5)
         {
             //Destroy the ball
-            Destroy(this.gameObject);
+            if(!m_OnDinamite)
+            {
+                //Destroy the object if we are not in dinamiteState
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                m_OnDinamite = false;
+            }
+            
         }
         else
         {
@@ -80,7 +95,8 @@ public class BallScript : MonoBehaviour {
             ch1.GetComponent<Rigidbody>().AddForce( new Vector3(Mathf.Sin(randomAngle) * forceMultiplier, Mathf.Cos(randomAngle) * forceMultiplier, 0.0f));
             ch2.GetComponent<Rigidbody>().AddForce( new Vector3(Mathf.Sin(inverseAngle) * forceMultiplier, Mathf.Cos(inverseAngle) * forceMultiplier, 0.0f));
 
-            
+            ch1.GetComponent<BallScript>().Dynamite(m_timeToSplit);
+            ch2.GetComponent<BallScript>().Dynamite(m_timeToSplit);
         }
     }
     /// <summary>
@@ -106,6 +122,7 @@ public class BallScript : MonoBehaviour {
         {
             m_rigidBody = this.GetComponent<Rigidbody>();
         }
+        m_isOnPause = true;
         cVelocity = m_rigidBody.velocity;
         m_rigidBody.velocity = Vector3.zero;
         cAngularVelocity = m_rigidBody.angularVelocity;
@@ -118,6 +135,11 @@ public class BallScript : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Start to blinck
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
     IEnumerator RestartBlinking(float time)
     {
         yield return new WaitForSeconds(time - blinkingTime);
@@ -125,16 +147,58 @@ public class BallScript : MonoBehaviour {
         StartCoroutine(Restart(blinkingTime));
     }
 
+    /// <summary>
+    /// Make Blink effect
+    /// </summary>
+    void Blink()
+    {
+        renderer.enabled = !renderer.enabled;
+    }
+
+
+    /// <summary>
+    /// Start to moving again
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
     IEnumerator Restart(float time)
     {
         yield return new WaitForSeconds(time);
         m_rigidBody.velocity = cVelocity;
         m_rigidBody.angularVelocity = cAngularVelocity;
         m_rigidBody.useGravity = true;
+        CancelInvoke("Blink");
+        m_isOnPause = false;
     }
 
-    public void Dynamite()
+    //Set the dynamite mode
+    public void Dynamite(float timeToSplit)
     {
-        Debug.Log("BOOOOM");
+        m_timeToSplit = timeToSplit;
+        m_OnDinamite = true;
+        StartCoroutine(SplitOnTime());
     }
+
+    IEnumerator SplitOnTime()
+    {
+        yield return new WaitForSeconds(m_timeToSplit);
+        Split();
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("Shield"))
+        {
+            RaycastHit hit;
+            if(m_rigidBody)
+            {
+                if (Physics.Raycast(transform.position, m_rigidBody.velocity.normalized, out hit))
+                {
+                    m_rigidBody.AddForce(hit.point.normalized * 5.0f, ForceMode.Impulse);
+                }
+            }
+        }
+    }
+
+
 }

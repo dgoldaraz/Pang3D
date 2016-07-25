@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine.SceneManagement;
 
@@ -9,8 +10,15 @@ public class GameManager : MonoBehaviour {
     public int numLives = 3;
 
     static private GameManager instance = null;
-    private Player[] m_players;
 
+    struct PlayerInfo
+    {
+        public string playerName;
+        public int lives;
+    }
+
+    
+    private List<PlayerInfo> m_playerInfo = new List<PlayerInfo>();
     /// <summary>
     /// Singleton implmentation
     /// </summary>
@@ -41,18 +49,40 @@ public class GameManager : MonoBehaviour {
     {
         //Add a listerner to the player hit
         Player.onPlayerHit += updatePlayersHit;
+        Player.onPlayerAddLive += updatePlayerLives;
 
-        //Save all the players on the level
-        m_players = FindObjectsOfType<Player>();
-        foreach (Player p in m_players)
+
+        if (m_playerInfo.Count == 0)
         {
-            p.setLives(numLives);
+            //Save all the players on the level
+            Player[] m_players = FindObjectsOfType<Player>();
+            //Init the list
+            foreach (Player p in m_players)
+            {
+                PlayerInfo pStruct;
+                pStruct.playerName = p.gameObject.name;
+                pStruct.lives = numLives;
+                m_playerInfo.Add(pStruct);
+            }
         }
+        else
+        {
+            Player[] m_players = FindObjectsOfType<Player>();
+            //Init the list
+            foreach (Player p in m_players)
+            {
+                foreach(PlayerInfo pp in m_playerInfo)
+                {
+                    if(pp.playerName == p.gameObject.name)
+                    {
+                        p.setLives(pp.lives);
+                    }
+                }
+            }
+        }
+        
     }
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
     /// <summary>
     /// Updates the state of the player passed when it's hit by a ball
     /// </summary>
@@ -62,12 +92,25 @@ public class GameManager : MonoBehaviour {
         
         //check if the game ends
         bool endGame = true;
-        foreach(Player p in m_players)
+        for(int i= 0; i < m_playerInfo.Count; ++i)
         {
-            if(p.getLives() > 0)
+            PlayerInfo pp = m_playerInfo[i];
+            if (pp.playerName == player.gameObject.name)
             {
-                endGame = false;
-                break;
+                pp.lives = m_playerInfo[i].lives - 1;
+                m_playerInfo[i] = pp;
+                if (pp.lives > 0)
+                {
+                    endGame = false;
+                    break;
+                }
+            }
+            else
+            {
+                if(pp.lives > 0)
+                {
+                    endGame = false;
+                }
             }
         }
 
@@ -75,17 +118,19 @@ public class GameManager : MonoBehaviour {
         {
             //
             Debug.Log("Game Ends!! You Lost");
+            //Return to main level
         }
         else
         {
-            numLives--;
             //Pause Everything!
-            Debug.Log("Pause Things!");
+            //Debug.Log("Pause Things!");
             BallScript[] balls = FindObjectsOfType<BallScript>();
             foreach(BallScript b in balls)
             {
                 b.Pause(-1);
             }
+            Player.onPlayerHit -= updatePlayersHit;
+            Player.onPlayerAddLive -= updatePlayerLives;
             StartCoroutine(Restart());
         }
     }
@@ -94,5 +139,19 @@ public class GameManager : MonoBehaviour {
     {
         yield return new WaitForSeconds(2);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void updatePlayerLives(GameObject player)
+    {
+        for(int i = 0; i < m_playerInfo.Count; ++i)
+        {
+            if(m_playerInfo[i].playerName == player.name)
+            {
+                PlayerInfo pp = m_playerInfo[i];
+                pp.lives = m_playerInfo[i].lives + 1;
+                m_playerInfo[i] = pp;
+            }
+        }
+        
     }
 }

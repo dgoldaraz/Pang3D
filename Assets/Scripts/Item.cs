@@ -4,7 +4,7 @@ using System;
 
 public class Item : MonoBehaviour {
 
-    public enum ItemType { Hook, DoubleHook, GrabHook, MachineGun, Shield, Dynamite, StopTime, Diagonal}
+    public enum ItemType { Hook, DoubleHook, GrabHook, MachineGun, Shield, Dynamite, StopTime, Diagonal, Live}
 
     public ItemType type;
 
@@ -12,10 +12,9 @@ public class Item : MonoBehaviour {
     public GameObject doubleHookGO;
     public GameObject grabHookGO;
     public GameObject machineGunGO;
-    public GameObject shieldGO;
     public GameObject diagonalGO;
-    public float pauseTime = 2.0f;
-
+    public float pauseBallTime = 4.0f;
+    public float timeToExplode = 0.5f;
     public float blinkingTime = 2.0f;
 
     private float m_lifeTime = 5.0f;
@@ -26,10 +25,68 @@ public class Item : MonoBehaviour {
 	void Start ()
     {
         renderer = GetComponent<MeshRenderer>();
+        init();
         setTime(m_lifeTime);
+        
 	}
 
-
+    /// <summary>
+    /// Init the object depending on the type
+    /// </summary>
+    void init()
+    {
+        switch (type)
+        {
+            case ItemType.Hook:
+                {
+                    renderer.material.color = Color.black;
+                    break;
+                }
+            case ItemType.DoubleHook:
+                {
+                    renderer.material.color = Color.blue;
+                    break;
+                }
+            case ItemType.GrabHook:
+                {
+                    renderer.material.color = Color.cyan;
+                    break;
+                }
+            case ItemType.MachineGun:
+                {
+                    renderer.material.color = Color.gray;
+                    break;
+                }
+            case ItemType.Shield:
+                {
+                    renderer.material.color = Color.green;
+                    break;
+                }
+            case ItemType.Dynamite:
+                {
+                    renderer.material.color = Color.grey;
+                    break;
+                }
+            case ItemType.StopTime:
+                {
+                    renderer.material.color = Color.magenta;
+                    break;
+                }
+            case ItemType.Diagonal:
+                {
+                    renderer.material.color = Color.red;
+                    break;
+                }
+            case ItemType.Live:
+                {
+                    renderer.material.color = Color.yellow;
+                    break;
+                }
+        }
+    }
+    /// <summary>
+    /// Sets the type of the item randomly
+    /// </summary>
     void setRandomItem()
     {
         type = (ItemType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(ItemType)).Length);
@@ -70,6 +127,7 @@ public class Item : MonoBehaviour {
         if(coll.gameObject.CompareTag("Player"))
         {
             ApplyEffect(coll.gameObject);
+            Destroy(gameObject);
         }
     }
 
@@ -96,7 +154,12 @@ public class Item : MonoBehaviour {
 
     void setShield(GameObject player)
     {
+        player.GetComponent<Player>().setShield(true);
+    }
 
+    void setLive(GameObject player)
+    {
+        player.GetComponent<Player>().addLives();
     }
 
     void setDynamite()
@@ -104,7 +167,7 @@ public class Item : MonoBehaviour {
         BallScript[] balls = FindObjectsOfType<BallScript>();
         foreach(BallScript b in balls)
         {
-            b.Dynamite();
+            b.Dynamite( timeToExplode);
         }
     }
 
@@ -113,7 +176,7 @@ public class Item : MonoBehaviour {
         BallScript[] balls = FindObjectsOfType<BallScript>();
         foreach (BallScript b in balls)
         {
-            b.Pause(pauseTime);
+            b.Pause(pauseBallTime);
         }
     }
 
@@ -168,6 +231,11 @@ public class Item : MonoBehaviour {
             case ItemType.Diagonal:
                 {
                     setDiagonal();
+                    break;
+                }
+            case ItemType.Live:
+                {
+                    setLive(player);
                     break;
                 }
         }

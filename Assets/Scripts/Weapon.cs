@@ -9,7 +9,6 @@ public class Weapon : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        GetComponent<Rigidbody>().useGravity = false;
     }
 
     /// <summary>

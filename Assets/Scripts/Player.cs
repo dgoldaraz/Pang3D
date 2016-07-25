@@ -12,6 +12,9 @@ public class Player : MonoBehaviour
     public delegate void PlayerHit(GameObject player);
     public static event PlayerHit onPlayerHit;
 
+    public delegate void PlayerAddLive(GameObject player);
+    public static event PlayerAddLive onPlayerAddLive;
+
     public KeyCode rightKey;
     public KeyCode leftKey;
     public KeyCode upKey;
@@ -27,18 +30,26 @@ public class Player : MonoBehaviour
 
     private Elevator m_elevator = null;
 
-    private int m_lives = 3;
+    public int m_lives = 3;
 
     public GameObject weapon;
     public GameObject peepHole;
 
     private bool m_canShoot = true;
 
+    public GameObject beltModel;
+    public GameObject shield;
+
+    public Color playerColor = Color.blue;
+
+    private bool m_shieldOn = false;
+    //We need to use this variable to avoid multiple collisions at the same time
+    private bool m_isDestroyed = false;
+
 
     // Use this for initialization
     void Start()
     {
-
         //Calculate the limits of the viewport depending on the camera
         float distance = transform.position.z - Camera.main.transform.position.z;
         Vector3 leftMost = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, distance));
@@ -46,7 +57,16 @@ public class Player : MonoBehaviour
         //Apply a padding of the walls
         m_xmax = rightMost.x - padding;
         m_xmin = leftMost.x + padding;
+
+        beltModel.GetComponent<MeshRenderer>().material.color = playerColor;
+        MeshRenderer shieldMeshRender = shield.GetComponent<MeshRenderer>();
+        Color shieldColor = Color.Lerp(playerColor, Color.white, 0.3f);
+        shieldColor.a = shieldMeshRender.material.color.a;
+        shieldMeshRender.material.color = shieldColor;
+        shieldMeshRender.enabled = false;
+        m_isDestroyed = false;
     }
+
 
     // Update is called once per frame
     void Update()
@@ -134,6 +154,10 @@ public class Player : MonoBehaviour
     public void addLives()
     {
         m_lives++;
+        if (onPlayerAddLive != null)
+        {
+            onPlayerAddLive(gameObject);
+        }
     }
     /// <summary>
     /// Deals with the collisions. Mainly it can be or an item or a ball or elevator
@@ -141,20 +165,32 @@ public class Player : MonoBehaviour
     /// <param name="coll"></param>
     void OnCollisionEnter(Collision coll)
     {
-        if (coll.gameObject.CompareTag("Ball"))
+        if (coll.gameObject.CompareTag("Ball") && !m_isDestroyed)
         {
-            Debug.Log("Dead, you have " + m_lives);
-            m_lives--;
-            if (onPlayerHit != null)
+            if(m_shieldOn)
             {
-                onPlayerHit(gameObject);
-            }
+                //Avoid the hit by the shield!
+                setShield(false);
 
-            if (m_lives == 0)
-            {
-                //disappear
-                Destroy(gameObject);
             }
+            else
+            {
+                
+                m_isDestroyed = true;
+                m_lives--;
+                Debug.Log("Dead, you have " + m_lives);
+                if (onPlayerHit != null)
+                {
+                    onPlayerHit(gameObject);
+                }
+
+                if (m_lives == 0)
+                {
+                    //disappear
+                    Destroy(gameObject);
+                }
+            }
+           
         }
         if (coll.gameObject.CompareTag("Paddle"))
         {
@@ -187,5 +223,24 @@ public class Player : MonoBehaviour
     public void SetWeapon(GameObject w)
     {
         weapon = w;
+    }
+
+
+    /// <summary>
+    /// Return the colour of the player
+    /// </summary>
+    /// <returns></returns>
+    public Color getPlayerColor()
+    {
+        return playerColor;
+    }
+
+    public void setShield(bool s)
+    {
+        if(m_shieldOn != s)
+        {
+            shield.GetComponent<MeshRenderer>().enabled = s;
+            m_shieldOn = s;
+        }
     }
 }
