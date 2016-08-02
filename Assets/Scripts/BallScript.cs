@@ -24,6 +24,11 @@ public class BallScript : MonoBehaviour {
 
     private bool m_OnDinamite = false;
     private float m_timeToSplit = 0.0f;
+    private float m_time = 0.0f;
+    private float m_pauseTime = 0.0f;
+
+    private bool m_restartWithForce = false;
+   
 
 
     // Use this for initialization
@@ -73,6 +78,9 @@ public class BallScript : MonoBehaviour {
         }
         else
         {
+            //Stop current coroutines
+
+            StopAllCoroutines();
             Destroy(this.gameObject);
             float nextScale = this.transform.localScale.x * 0.5f;
             if(nextScale > 1.0f)
@@ -92,11 +100,36 @@ public class BallScript : MonoBehaviour {
             ch1.transform.localScale = new Vector3(nextScale, nextScale, nextScale);
             ch2.transform.localScale = new Vector3(nextScale, nextScale, nextScale);
 
-            ch1.GetComponent<Rigidbody>().AddForce( new Vector3(Mathf.Sin(randomAngle) * forceMultiplier, Mathf.Cos(randomAngle) * forceMultiplier, 0.0f));
-            ch2.GetComponent<Rigidbody>().AddForce( new Vector3(Mathf.Sin(inverseAngle) * forceMultiplier, Mathf.Cos(inverseAngle) * forceMultiplier, 0.0f));
+            if (m_isOnPause)
+            {
+                Vector3 offsetPos = new Vector3(nextScale * 0.5f, 0.0f, 0.0f);
 
-            ch1.GetComponent<BallScript>().Dynamite(m_timeToSplit);
-            ch2.GetComponent<BallScript>().Dynamite(m_timeToSplit);
+                //Set a new position with and object dependant of the scale
+                Vector3 ball1Position = transform.position + offsetPos;
+                Vector3 ball2Position = transform.position - offsetPos;
+                ch1.transform.position = ball1Position;
+                ch2.transform.position = ball2Position;
+
+                //get the next time and pause the balls
+                float remainTime = Time.time - m_time;
+                remainTime = remainTime % 60.0f; //seconds
+                remainTime = m_pauseTime - remainTime;
+                ch1.GetComponent<BallScript>().PauseWithForce(remainTime, randomAngle);
+                ch2.GetComponent<BallScript>().PauseWithForce(remainTime, inverseAngle);
+            }
+            else
+            {
+                ch1.GetComponent<Rigidbody>().AddForce(new Vector3(Mathf.Sin(randomAngle) * forceMultiplier, Mathf.Cos(randomAngle) * forceMultiplier, 0.0f));
+                ch2.GetComponent<Rigidbody>().AddForce(new Vector3(Mathf.Sin(inverseAngle) * forceMultiplier, Mathf.Cos(inverseAngle) * forceMultiplier, 0.0f));
+            }
+
+            if (m_OnDinamite)
+            {
+                ch1.GetComponent<BallScript>().Dynamite(m_timeToSplit);
+                ch2.GetComponent<BallScript>().Dynamite(m_timeToSplit);
+            }
+
+
         }
     }
     /// <summary>
@@ -122,12 +155,27 @@ public class BallScript : MonoBehaviour {
         {
             m_rigidBody = this.GetComponent<Rigidbody>();
         }
-        m_isOnPause = true;
-        cVelocity = m_rigidBody.velocity;
-        m_rigidBody.velocity = Vector3.zero;
-        cAngularVelocity = m_rigidBody.angularVelocity;
-        m_rigidBody.angularVelocity = Vector3.zero;
-        m_rigidBody.useGravity = false;
+
+        m_time = Time.time;
+        m_pauseTime = time;
+
+        if (m_isOnPause)
+        {
+            //We are on pause yet, stop coroutines and restart
+            StopAllCoroutines();
+            CancelInvoke("Blink");
+            renderer.enabled = true;
+        }
+        else
+        {
+            m_isOnPause = true;
+            cVelocity = m_rigidBody.velocity;
+            m_rigidBody.velocity = Vector3.zero;
+            cAngularVelocity = m_rigidBody.angularVelocity;
+            m_rigidBody.angularVelocity = Vector3.zero;
+            m_rigidBody.useGravity = false;
+        }
+        
 
         if(time != -1)
         {
@@ -135,6 +183,12 @@ public class BallScript : MonoBehaviour {
         }
     }
 
+    void PauseWithForce(float time, float angle)
+    {
+        m_restartWithForce = true;
+        startAngle = angle;
+        Pause(time);
+    }
     /// <summary>
     /// Start to blinck
     /// </summary>
@@ -152,6 +206,10 @@ public class BallScript : MonoBehaviour {
     /// </summary>
     void Blink()
     {
+        if(!renderer)
+        {
+            renderer = GetComponent<MeshRenderer>();
+        }
         renderer.enabled = !renderer.enabled;
     }
 
@@ -164,9 +222,17 @@ public class BallScript : MonoBehaviour {
     IEnumerator Restart(float time)
     {
         yield return new WaitForSeconds(time);
-        m_rigidBody.velocity = cVelocity;
-        m_rigidBody.angularVelocity = cAngularVelocity;
+
         m_rigidBody.useGravity = true;
+        if (!m_restartWithForce)
+        {
+            m_rigidBody.velocity = cVelocity * 1.5f;
+            m_rigidBody.angularVelocity = cAngularVelocity;
+        }
+        else
+        {
+            m_rigidBody.AddForce(new Vector3(Mathf.Sin(startAngle) * forceMultiplier, Mathf.Cos(startAngle) * forceMultiplier, 0.0f));
+        }
         CancelInvoke("Blink");
         m_isOnPause = false;
     }
