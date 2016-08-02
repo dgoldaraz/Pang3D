@@ -12,7 +12,7 @@ public class Elevator : MonoBehaviour {
     public Position currentPosition;
     public float speed = 3.0f;
 
-    private bool isMoving = false;
+    private bool m_isMoving = false;
     private Position destination = Position.Down;
 
 	// Use this for initialization
@@ -56,15 +56,20 @@ public class Elevator : MonoBehaviour {
         Move();
     }
 
+    public bool isMoving()
+    {
+        return m_isMoving;
+    }
+
     /// <summary>
     /// Set the move of the paddle high
     /// </summary>
     public void GoUp()
     {
-        if(currentPosition != Position.Up && !isMoving)
+        if(currentPosition != Position.Up && !m_isMoving)
         {
             //Move up
-            isMoving = true;
+            m_isMoving = true;
             destination = Position.Up;
         }
     }
@@ -73,10 +78,10 @@ public class Elevator : MonoBehaviour {
     /// </summary>
     public void GoDown()
     {
-        if(currentPosition != Position.Down && !isMoving)
+        if(currentPosition != Position.Down && !m_isMoving)
         {
             //Move down
-            isMoving = true;
+            m_isMoving = true;
             destination = Position.Down;
         }
     }
@@ -86,7 +91,7 @@ public class Elevator : MonoBehaviour {
     void Move()
     {
         //Update the paddle if neccesary
-        if(isMoving)
+        if(m_isMoving)
         {
             Vector3 pos = paddle.position;
             switch (destination)
@@ -100,7 +105,7 @@ public class Elevator : MonoBehaviour {
                         }
                         else
                         {
-                            isMoving = false;
+                            m_isMoving = false;
                             currentPosition = Position.Up;
                         }
                         break;
@@ -114,7 +119,7 @@ public class Elevator : MonoBehaviour {
                         }
                         else
                         {
-                            isMoving = false;
+                            m_isMoving = false;
                             currentPosition = Position.Down;
                         }
                         break;

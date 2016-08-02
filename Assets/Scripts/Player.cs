@@ -205,7 +205,7 @@ public class Player : MonoBehaviour
     /// <param name="coll"></param>
     void OnCollisionExit(Collision coll)
     {
-        if (coll.gameObject.CompareTag("Paddle"))
+        if (coll.gameObject.CompareTag("Paddle") && m_elevator && !m_elevator.isMoving())
         {
             //Get the elevator
             m_elevator = null;

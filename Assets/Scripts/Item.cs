@@ -25,10 +25,12 @@ public class Item : MonoBehaviour {
 	void Start ()
     {
         renderer = GetComponent<MeshRenderer>();
+        setRandomItem();
         init();
         setTime(m_lifeTime);
-        
+
 	}
+
 
     /// <summary>
     /// Init the object depending on the type

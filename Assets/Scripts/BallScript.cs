@@ -28,6 +28,9 @@ public class BallScript : MonoBehaviour {
     private float m_pauseTime = 0.0f;
 
     private bool m_restartWithForce = false;
+
+    public GameObject ItemWhenSplit;
+    public float randomPercentage = 0.3f; //30% times an item appears
    
 
 
@@ -129,6 +132,11 @@ public class BallScript : MonoBehaviour {
                 ch2.GetComponent<BallScript>().Dynamite(m_timeToSplit);
             }
 
+
+            if(Random.value <= randomPercentage)
+            {
+                Instantiate(ItemWhenSplit, transform.position, Quaternion.identity);
+            }
 
         }
     }
