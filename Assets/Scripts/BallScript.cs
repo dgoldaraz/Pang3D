@@ -12,10 +12,9 @@ public class BallScript : MonoBehaviour {
     public float startAngle = -1.0f;
 
     public float forceMultiplier = 100.0f;
-    public float startForce = 100.0f;
 
-    public Vector3 cVelocity;
-    public Vector3 cAngularVelocity;
+    private Vector3 cVelocity;
+    private Vector3 cAngularVelocity;
 
     public float blinkingTime = 1.0f;
 
@@ -30,8 +29,10 @@ public class BallScript : MonoBehaviour {
     private bool m_restartWithForce = false;
 
     public GameObject ItemWhenSplit;
+    [Range(0f,1f)]
     public float randomPercentage = 0.3f; //30% times an item appears
-   
+    public Vector3 ballGravity;
+    private bool m_useGravity = true;
 
 
     // Use this for initialization
@@ -45,19 +46,40 @@ public class BallScript : MonoBehaviour {
             //Get a random angle
             startAngle = Random.Range(30.0f, 80.0f);
         }
-        ApplyForceInAngle(startAngle, startForce);
+
+        if(startAngle != 0f && !m_isOnPause)
+        {
+            ApplyForceInAngle(startAngle, forceMultiplier);
+        }
+
         renderer = GetComponent<MeshRenderer>();
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	void FixedUpdate ()
     {
-        //Check the velocity to not exceed some values and it's not completely vertical
-        //if (Input.GetKeyDown(KeyCode.Space))
+        if(m_useGravity)
+        {
+            m_rigidBody.AddForce(ballGravity * m_rigidBody.mass);
+        }
+        
+    }
+
+    void Update()
+    {
+        //if(Input.GetKeyDown(KeyCode.Space))
         //{
-        //    Split();
+        //    if(m_isOnPause)
+        //    {
+        //        Dynamite(0.5f);
+        //    }
+        //    else
+        //    {
+        //        Pause(6f);
+        //    }
+            
         //}
-	}
+    }
     /// <summary>
     /// Split the ball in two small balls
     /// Adds some forces to the new ones
@@ -65,7 +87,7 @@ public class BallScript : MonoBehaviour {
     public void Split()
     {
         //Split the ball in two small ones and dissapear
-        if (this.transform.localScale.x == 0.5)
+        if (this.transform.localScale.x == 0.25)
         {
             //Destroy the ball
             if(!m_OnDinamite)
@@ -84,28 +106,36 @@ public class BallScript : MonoBehaviour {
             //Stop current coroutines
 
             StopAllCoroutines();
-            Destroy(this.gameObject);
+            
+
             float nextScale = this.transform.localScale.x * 0.5f;
+
             if(nextScale > 1.0f)
             {
                 nextScale = Mathf.Ceil(nextScale);
             }
+
             //Calculate new directions
-            float randomAngle = Random.Range(45.0f, 60.0f);
-            float inverseAngle = 360.0f - randomAngle;
+            float randomAngle = Random.Range(35.0f,55.0f);
+            float inverseAngle = -randomAngle;
 
-            randomAngle *= Mathf.Deg2Rad;
-            inverseAngle *= Mathf.Deg2Rad;
+            //We move the next pair of balls up a little
+            Vector3 offset = new Vector3(0.0f, nextScale, 0.0f);
 
-            GameObject ch1 = Instantiate(gameObject, transform.position, Quaternion.identity) as GameObject;
-            GameObject ch2 = Instantiate(gameObject, transform.position, Quaternion.identity) as GameObject;
+            GameObject ch1 = Instantiate(gameObject, transform.position + offset, Quaternion.identity) as GameObject;
+            GameObject ch2 = Instantiate(gameObject, transform.position + offset, Quaternion.identity) as GameObject;
 
             ch1.transform.localScale = new Vector3(nextScale, nextScale, nextScale);
             ch2.transform.localScale = new Vector3(nextScale, nextScale, nextScale);
 
+            BallScript ch1BallScript = ch1.GetComponent<BallScript>();
+            BallScript ch2BallScript = ch2.GetComponent<BallScript>();
+
+            Destroy(this.gameObject);
+
             if (m_isOnPause)
             {
-                Vector3 offsetPos = new Vector3(nextScale * 0.5f, 0.0f, 0.0f);
+                Vector3 offsetPos = new Vector3(nextScale, 0.0f, 0.0f);
 
                 //Set a new position with and object dependant of the scale
                 Vector3 ball1Position = transform.position + offsetPos;
@@ -117,19 +147,22 @@ public class BallScript : MonoBehaviour {
                 float remainTime = Time.time - m_time;
                 remainTime = remainTime % 60.0f; //seconds
                 remainTime = m_pauseTime - remainTime;
-                ch1.GetComponent<BallScript>().PauseWithForce(remainTime, randomAngle);
-                ch2.GetComponent<BallScript>().PauseWithForce(remainTime, inverseAngle);
+                ch1BallScript.PauseWithForce(remainTime, randomAngle);
+                ch2BallScript.PauseWithForce(remainTime, inverseAngle);
             }
             else
             {
-                ch1.GetComponent<Rigidbody>().AddForce(new Vector3(Mathf.Sin(randomAngle) * forceMultiplier, Mathf.Cos(randomAngle) * forceMultiplier, 0.0f));
-                ch2.GetComponent<Rigidbody>().AddForce(new Vector3(Mathf.Sin(inverseAngle) * forceMultiplier, Mathf.Cos(inverseAngle) * forceMultiplier, 0.0f));
+                //Normal split
+                ch1BallScript.startAngle = randomAngle;
+                ch2BallScript.startAngle = inverseAngle;
+                ch1BallScript.ballGravity = ballGravity + new Vector3(0.0f, -1.0f, 0.0f);
+                ch2BallScript.ballGravity = ballGravity + new Vector3(0.0f, -1.0f, 0.0f);
             }
 
             if (m_OnDinamite)
             {
-                ch1.GetComponent<BallScript>().Dynamite(m_timeToSplit);
-                ch2.GetComponent<BallScript>().Dynamite(m_timeToSplit);
+                ch1BallScript.Dynamite(m_timeToSplit);
+                ch2BallScript.Dynamite(m_timeToSplit);
             }
 
 
@@ -154,6 +187,7 @@ public class BallScript : MonoBehaviour {
         }
         m_rigidBody.AddForce(new Vector3(Mathf.Sin(degreeAngle) * force, Mathf.Cos(degreeAngle) * force, 0.0f));
     }
+
     /// <summary>
     /// Pause the ball
     /// </summary>
@@ -181,9 +215,8 @@ public class BallScript : MonoBehaviour {
             m_rigidBody.velocity = Vector3.zero;
             cAngularVelocity = m_rigidBody.angularVelocity;
             m_rigidBody.angularVelocity = Vector3.zero;
-            m_rigidBody.useGravity = false;
+            m_useGravity = false;
         }
-        
 
         if(time != -1)
         {
@@ -191,6 +224,11 @@ public class BallScript : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// This Pause mthod is only use when we want to apply an specific force when the object restarts
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="angle"></param>
     void PauseWithForce(float time, float angle)
     {
         m_restartWithForce = true;
@@ -221,7 +259,6 @@ public class BallScript : MonoBehaviour {
         renderer.enabled = !renderer.enabled;
     }
 
-
     /// <summary>
     /// Start to moving again
     /// </summary>
@@ -231,7 +268,7 @@ public class BallScript : MonoBehaviour {
     {
         yield return new WaitForSeconds(time);
 
-        m_rigidBody.useGravity = true;
+        m_useGravity = true;
         if (!m_restartWithForce)
         {
             m_rigidBody.velocity = cVelocity * 1.5f;
@@ -245,7 +282,10 @@ public class BallScript : MonoBehaviour {
         m_isOnPause = false;
     }
 
-    //Set the dynamite mode
+    /// <summary>
+    /// Set the dynamite mode
+    /// </summary>
+    /// <param name="timeToSplit"></param>
     public void Dynamite(float timeToSplit)
     {
         m_timeToSplit = timeToSplit;

@@ -17,7 +17,7 @@ public class Item : MonoBehaviour {
     public float timeToExplode = 0.5f;
     public float blinkingTime = 2.0f;
 
-    private float m_lifeTime = 5.0f;
+    public float m_lifeTime = 5.0f;
 
     private new MeshRenderer renderer;
 
@@ -28,7 +28,6 @@ public class Item : MonoBehaviour {
         setRandomItem();
         init();
         setTime(m_lifeTime);
-
 	}
 
 
