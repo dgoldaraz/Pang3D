@@ -65,7 +65,7 @@ public class Item : MonoBehaviour {
                 }
             case ItemType.Dynamite:
                 {
-                    renderer.material.color = Color.grey;
+                    renderer.material.color = Color.red;
                     break;
                 }
             case ItemType.StopTime:
@@ -75,7 +75,7 @@ public class Item : MonoBehaviour {
                 }
             case ItemType.Diagonal:
                 {
-                    renderer.material.color = Color.red;
+                    renderer.material.color = Color.white;
                     break;
                 }
             case ItemType.Live:

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [RequireComponent(typeof(CapsuleCollider))]
 public class HookWeapon : Weapon {
 
-    private bool m_move = false;
+    protected bool m_move = false;
     protected GameObject m_player;
     private float m_amount = 0.0f;
 
@@ -23,6 +23,8 @@ public class HookWeapon : Weapon {
     private bool isDestroyed = false;
 
     List<GameObject> m_partList;
+
+    private Vector3 m_shootDirection = Vector3.up;
 
     // Use this for initialization
     void Start ()
@@ -66,21 +68,31 @@ public class HookWeapon : Weapon {
     /// <summary>
     /// Move the hook up
     /// </summary>
-    void Move()
+    public void Move()
     {
         if(m_move)
         {
             Vector3 newPos = transform.position;
-            Vector3 movement = Vector3.up * speed * Time.deltaTime;
+            Vector3 movement = m_shootDirection * speed * Time.deltaTime;
             newPos += movement;
-            m_amount += movement.y;
-            //if the amount of movement it's bigger than our internal meusre, create a new part
-            if(m_amount >= m_partHeight)
-            {
-                CreatePart();
-            }
+            PartMovement(movement);
             this.transform.position = newPos;
         }
+    }
+
+    private void PartMovement(Vector3 movement)
+    {
+        m_amount += movement.y;
+        //if the amount of movement it's bigger than our internal meusre, create a new part
+        if (m_amount >= m_partHeight)
+        {
+            CreatePart();
+        }
+    }
+
+    protected void setShootDirection(Vector3 newDirection)
+    {
+        m_shootDirection = newDirection;
     }
 
     /// <summary>

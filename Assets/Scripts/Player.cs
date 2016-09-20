@@ -46,6 +46,11 @@ public class Player : MonoBehaviour
     //We need to use this variable to avoid multiple collisions at the same time
     private bool m_isDestroyed = false;
 
+    private enum Direction { Left, Right }
+    private Direction m_lastDirection = Direction.Left;
+
+    public float diagonalOffset = 0.2f;
+
 
     // Use this for initialization
     void Start()
@@ -86,12 +91,14 @@ public class Player : MonoBehaviour
             //Right
             movement = true;
             newPos += Vector3.right * speed * Time.deltaTime;
+            m_lastDirection = Direction.Right;
         }
         else if (Input.GetKey(leftKey))
         {
             //Left
             movement = true;
             newPos += Vector3.left * speed * Time.deltaTime;
+            m_lastDirection = Direction.Left;
         }
         else if (Input.GetKey(upKey))
         {
@@ -235,12 +242,30 @@ public class Player : MonoBehaviour
         return playerColor;
     }
 
+    /// <summary>
+    /// Set Shield method
+    /// </summary>
+    /// <param name="s"></param>
     public void setShield(bool s)
     {
         if(m_shieldOn != s)
         {
             shield.GetComponent<MeshRenderer>().enabled = s;
             m_shieldOn = s;
+        }
+    }
+
+    public float getDiagonalOffset()
+    {
+        if(m_lastDirection == Direction.Right)
+        {
+            //Return right PeepHole
+            return diagonalOffset;
+        }
+        else
+        {
+            //Return left PeepHole
+            return -diagonalOffset;
         }
     }
 }
