@@ -67,18 +67,7 @@ public class BallScript : MonoBehaviour {
 
     void Update()
     {
-        //if(Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    if(m_isOnPause)
-        //    {
-        //        Dynamite(0.5f);
-        //    }
-        //    else
-        //    {
-        //        Pause(6f);
-        //    }
-            
-        //}
+
     }
     /// <summary>
     /// Split the ball in two small balls
@@ -94,12 +83,13 @@ public class BallScript : MonoBehaviour {
             {
                 //Destroy the object if we are not in dinamiteState
                 Destroy(this.gameObject);
+                //Ask the gameManager to check if there are more balls
+                FindObjectOfType<GameManager>().CheckEndGame();
             }
             else
             {
                 m_OnDinamite = false;
             }
-            
         }
         else
         {
@@ -107,7 +97,6 @@ public class BallScript : MonoBehaviour {
 
             StopAllCoroutines();
             
-
             float nextScale = this.transform.localScale.x * 0.5f;
 
             if(nextScale > 1.0f)
@@ -172,7 +161,11 @@ public class BallScript : MonoBehaviour {
             }
 
         }
+
+        FindObjectOfType<GameManager>().addPoints(25);
     }
+
+
     /// <summary>
     /// Method to add a force to the ball in an specific angle in degrees
     /// </summary>

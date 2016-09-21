@@ -4,11 +4,11 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
 	
-	private Manager mPlayer;
+	private GameManager mPlayer;
 	
 	void Start()
 	{
-		mPlayer = GameObject.FindObjectOfType<Manager>();
+		mPlayer = GameObject.FindObjectOfType<GameManager>();
 	}	
 	
 	public void LoadLevel(string name)

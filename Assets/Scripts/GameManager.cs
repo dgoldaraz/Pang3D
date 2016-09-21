@@ -7,15 +7,30 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour {
 
 
-    public int numLives = 3;
+    public int maxNumLives = 3;
+    public int secondsToEnd = 70;
+    private static GameManager instance = null;
+    private static int lastLevel = 1;
 
-    static private GameManager instance = null;
+    private int m_score = 0;
+
+    public delegate void ScoreChanged(int score);
+    public static event ScoreChanged onScoreChanged;
+
+
+    public delegate void CountDownChanged(int countDown);
+    public static event CountDownChanged onCountDownChanged;
+    
+
+    private int m_countDown;
 
     struct PlayerInfo
     {
         public string playerName;
         public int lives;
     }
+
+
 
     
     private List<PlayerInfo> m_playerInfo = new List<PlayerInfo>();
@@ -51,7 +66,6 @@ public class GameManager : MonoBehaviour {
         Player.onPlayerHit += updatePlayersHit;
         Player.onPlayerAddLive += updatePlayerLives;
 
-
         if (m_playerInfo.Count == 0)
         {
             //Save all the players on the level
@@ -61,7 +75,7 @@ public class GameManager : MonoBehaviour {
             {
                 PlayerInfo pStruct;
                 pStruct.playerName = p.gameObject.name;
-                pStruct.lives = numLives;
+                pStruct.lives = maxNumLives;
                 m_playerInfo.Add(pStruct);
             }
         }
@@ -80,7 +94,8 @@ public class GameManager : MonoBehaviour {
                 }
             }
         }
-        
+        m_countDown = secondsToEnd;
+        StartCountDown();
     }
 
     /// <summary>
@@ -114,11 +129,12 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        if(endGame || numLives == 0)
+        if(endGame || maxNumLives == 0)
         {
             //
-            Debug.Log("Game Ends!! You Lost");
+            FindObjectOfType<GUIAndInputManager>().showLosePanel();
             //Return to main level
+            m_score = 0;
         }
         else
         {
@@ -141,6 +157,10 @@ public class GameManager : MonoBehaviour {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    /// <summary>
+    /// Update the player lives depending on the hits
+    /// </summary>
+    /// <param name="player"></param>
     void updatePlayerLives(GameObject player)
     {
         for(int i = 0; i < m_playerInfo.Count; ++i)
@@ -154,4 +174,84 @@ public class GameManager : MonoBehaviour {
         }
         
     }
+
+    /// <summary>
+    /// Checks if the game has ended because there are no more balls
+    /// </summary>
+    public void CheckEndGame()
+    {
+        //Check if there are still balls in the scene
+        BallScript[] balls = FindObjectsOfType<BallScript>();
+        if(balls.Length == 1)
+        {
+            //Done
+            FindObjectOfType<GUIAndInputManager>().showWinPanel();
+            //Add 500 points for wining
+            addPoints(500);
+        }
+    }
+    /// <summary>
+    /// return the current level
+    /// </summary>
+    /// <returns></returns>
+    public int getLastLevel()
+    {
+        return lastLevel;
+    }
+
+    /// <summary>
+    /// Change the current levekl
+    /// </summary>
+    /// <param name="level"></param>
+    public void setLastLevel(int level)
+    {
+        lastLevel = level;
+    }
+    /// <summary>
+    /// Return the current Score
+    /// </summary>
+    /// <returns></returns>
+    public int getScore()
+    {
+        return m_score;
+    }
+
+    /// <summary>
+    /// Add points to the score
+    /// </summary>
+    /// <param name="points"></param>
+    public void addPoints(int points)
+    {
+        m_score += points;
+        if(onScoreChanged != null)
+        {
+            onScoreChanged(m_score);
+        }
+    }
+
+    public void StartCountDown()
+    {
+        InvokeRepeating("DecreaseCountDown", 0.0f, 1.0f);
+    }
+
+    void DecreaseCountDown()
+    {
+        
+        if (m_countDown == 0)
+        {
+            //Finish the game if the countdown is 0
+            FindObjectOfType<GUIAndInputManager>().showLosePanel();
+            //Return to main level
+            m_score = 0;
+        }
+        else
+        {
+            m_countDown--;
+            if (onCountDownChanged != null)
+            {
+                onCountDownChanged(m_countDown);
+            }
+        }
+    }
+
 }
