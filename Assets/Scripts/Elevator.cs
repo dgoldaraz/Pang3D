@@ -44,15 +44,6 @@ public class Elevator : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-
-        //if (Input.GetKeyDown(KeyCode.UpArrow))
-        //{
-        //    GoUp();
-        //}
-        //if (Input.GetKeyDown(KeyCode.DownArrow))
-        //{
-        //    GoDown();
-        //}
         Move();
     }
 

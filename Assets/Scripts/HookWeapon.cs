@@ -26,6 +26,9 @@ public class HookWeapon : Weapon {
 
     private Vector3 m_shootDirection = Vector3.up;
 
+    public delegate void Rotate();
+    public static event Rotate onRotate;
+
     // Use this for initialization
     void Start ()
     {
@@ -87,6 +90,10 @@ public class HookWeapon : Weapon {
         if (m_amount >= m_partHeight)
         {
             CreatePart();
+            if(onRotate != null)
+            {
+                onRotate();
+            }
         }
     }
 
@@ -102,7 +109,8 @@ public class HookWeapon : Weapon {
     void CreatePart()
     {
         //Create a new object and reparent to the last part created
-        GameObject newPart = Instantiate(part, m_initialPosition, Quaternion.identity) as GameObject;
+        Quaternion rot = Quaternion.Euler(-90f, 0.0f, 0.0f);
+        GameObject newPart = Instantiate(part, m_initialPosition, rot) as GameObject;
         m_partList.Add(newPart);
         newPart.transform.parent = m_lastPart.transform;
         m_lastPart = newPart;
