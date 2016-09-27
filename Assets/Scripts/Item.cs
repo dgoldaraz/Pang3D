@@ -21,13 +21,20 @@ public class Item : MonoBehaviour {
 
     private new MeshRenderer renderer;
 
+    public GameObject[] objectsPreview;
+
 	// Use this for initialization
 	void Start ()
     {
         renderer = GetComponent<MeshRenderer>();
-        setRandomItem();
+        //setRandomItem();
         init();
         setTime(m_lifeTime);
+        int numTypes = System.Enum.GetValues(typeof(ItemType)).Length;
+        if (objectsPreview.Length < numTypes)
+        {
+            objectsPreview = new GameObject[numTypes];
+        }
 	}
 
 
@@ -36,6 +43,13 @@ public class Item : MonoBehaviour {
     /// </summary>
     void init()
     {
+        GameObject go = null;
+        if (objectsPreview[(int)type] != null)
+        {
+            go = objectsPreview[(int)type];
+            gameObject.GetComponent<MeshFilter>().mesh = go.GetComponent<MeshFilter>().mesh;
+        }
+
         switch (type)
         {
             case ItemType.Hook:
@@ -80,7 +94,7 @@ public class Item : MonoBehaviour {
                 }
             case ItemType.Live:
                 {
-                    renderer.material.color = Color.yellow;
+                    //renderer.material.color = Color.yellow;
                     break;
                 }
         }

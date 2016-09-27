@@ -33,7 +33,7 @@ public class BallScript : MonoBehaviour {
     public float randomPercentage = 0.3f; //30% times an item appears
     public Vector3 ballGravity;
     private bool m_useGravity = true;
-
+    
 
     // Use this for initialization
     void Start ()
@@ -53,7 +53,7 @@ public class BallScript : MonoBehaviour {
         }
 
         renderer = GetComponent<MeshRenderer>();
-	}
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate ()
@@ -76,6 +76,7 @@ public class BallScript : MonoBehaviour {
     public void Split()
     {
         //Split the ball in two small ones and dissapear
+        FindObjectOfType<GameManager>().SplitBall(GetComponent<Renderer>().material.color, this.transform);
         if (this.transform.localScale.x == 0.25)
         {
             //Destroy the ball
@@ -163,6 +164,7 @@ public class BallScript : MonoBehaviour {
         }
 
         FindObjectOfType<GameManager>().addPoints(25);
+       
     }
 
 

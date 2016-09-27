@@ -51,6 +51,8 @@ public class Player : MonoBehaviour
 
     public float diagonalOffset = 0.2f;
 
+    public ParticleSystem shootParticleSystem;
+
 
     // Use this for initialization
     void Start()
@@ -134,8 +136,14 @@ public class Player : MonoBehaviour
     {
         if(weapon)
         {
-            GameObject go = Instantiate(weapon, peepHole.transform.position, Quaternion.identity) as GameObject;
+            GameObject go = Instantiate(weapon, peepHole.transform.position, weapon.transform.rotation) as GameObject;
             go.GetComponent<Weapon>().Shoot(gameObject, peepHole.transform.position);
+
+            if (shootParticleSystem && shootParticleSystem.isStopped)
+            {
+                shootParticleSystem.Play();
+            }
+
         }
        
     }

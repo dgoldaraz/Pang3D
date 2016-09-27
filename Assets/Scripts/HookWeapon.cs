@@ -34,7 +34,7 @@ public class HookWeapon : Weapon {
     {
         m_lastPart = gameObject;
         m_capsuleCollider = GetComponent<CapsuleCollider>();
-        m_partHeight = m_capsuleCollider.height * transform.localScale.y;
+        m_partHeight = m_capsuleCollider.height * transform.localScale.y*0.1f;
         m_initialHeight = m_capsuleCollider.height;
         m_partList = new List<GameObject>();
         GetComponent<Rigidbody>().useGravity = false;
@@ -52,7 +52,6 @@ public class HookWeapon : Weapon {
     /// <param name="player"></param>
     public override void Shoot(GameObject player, Vector3 initPos)
     {
-        Debug.Log(player.name + " Shoots hook");
         m_move = true;
         m_player = player;
         m_initialPosition = initPos;
@@ -119,7 +118,7 @@ public class HookWeapon : Weapon {
         float newHeight = Mathf.Abs(transform.position.y - m_initialPosition.y) * (1 / transform.localScale.y);
         m_capsuleCollider.height = newHeight + m_initialHeight * 0.5f + newPart.GetComponent<CapsuleCollider>().height * 0.5f;
         Vector3 newCenter = m_capsuleCollider.center;
-        newCenter.y = -newHeight * 0.5f;
+        newCenter.z = -newHeight * 0.5f;
         m_capsuleCollider.center = newCenter;
         m_amount = 0.0f;
         
