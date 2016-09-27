@@ -23,6 +23,8 @@ public class Item : MonoBehaviour {
 
     public GameObject[] objectsPreview;
 
+    private GameObject m_Preview;
+
 	// Use this for initialization
 	void Start ()
     {
@@ -43,25 +45,15 @@ public class Item : MonoBehaviour {
     /// </summary>
     void init()
     {
-        GameObject go = null;
         if (objectsPreview[(int)type] != null)
         {
-            go = objectsPreview[(int)type];
-            gameObject.GetComponent<MeshFilter>().mesh = go.GetComponent<MeshFilter>().mesh;
+            m_Preview = Instantiate(objectsPreview[(int)type], gameObject.transform.position, objectsPreview[(int)type].transform.rotation) as GameObject;
+            m_Preview.transform.parent = gameObject.transform;
+            renderer = m_Preview.GetComponent<MeshRenderer>();
         }
 
         switch (type)
         {
-            case ItemType.Hook:
-                {
-                    renderer.material.color = Color.black;
-                    break;
-                }
-            case ItemType.DoubleHook:
-                {
-                    renderer.material.color = Color.blue;
-                    break;
-                }
             case ItemType.GrabHook:
                 {
                     renderer.material.color = Color.cyan;
@@ -195,9 +187,9 @@ public class Item : MonoBehaviour {
         }
     }
 
-    void setDiagonal()
+    void setDiagonal(GameObject player)
     {
-
+        player.GetComponent<Player>().SetWeapon(diagonalGO);
     }
 
     /// <summary>
@@ -245,7 +237,7 @@ public class Item : MonoBehaviour {
                 }
             case ItemType.Diagonal:
                 {
-                    setDiagonal();
+                    setDiagonal(player);
                     break;
                 }
             case ItemType.Live:

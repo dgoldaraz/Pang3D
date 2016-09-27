@@ -108,8 +108,8 @@ public class HookWeapon : Weapon {
     void CreatePart()
     {
         //Create a new object and reparent to the last part created
-        Quaternion rot = Quaternion.Euler(-90f, 0.0f, 0.0f);
-        GameObject newPart = Instantiate(part, m_initialPosition, rot) as GameObject;
+        
+        GameObject newPart = Instantiate(part, m_initialPosition, part.transform.rotation) as GameObject;
         m_partList.Add(newPart);
         newPart.transform.parent = m_lastPart.transform;
         m_lastPart = newPart;
