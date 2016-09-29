@@ -15,13 +15,11 @@ public class MachineGunWeapon : Weapon {
     public override void Shoot(GameObject player, Vector3 initPos)
     {
         //Create two bullets and moveUp
-        Vector3 bPos1 = initPos;
-        bPos1.x -= bulletSpacing * 0.5f;
-        GameObject bullet1 = Instantiate(bullet, bPos1, Quaternion.identity) as GameObject;
+        GameObject bullet1 = Instantiate(bullet, initPos, Quaternion.identity) as GameObject;
+        bullet1.GetComponent<Bullet>().bulletSpacing = -bulletSpacing;
 
-        Vector3 bPos2 = initPos;
-        bPos2.x += bulletSpacing * 0.5f;
-        GameObject bullet2 = Instantiate(bullet, bPos2, Quaternion.identity) as GameObject;
+        GameObject bullet2 = Instantiate(bullet, initPos, Quaternion.identity) as GameObject;
+        bullet2.GetComponent<Bullet>().bulletSpacing = bulletSpacing;
 
         Vector3 velocity = new Vector3(0.0f, speed, 0.0f);
         bullet1.GetComponent<Rigidbody>().velocity = velocity;

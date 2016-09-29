@@ -25,6 +25,7 @@ public class HookWeapon : Weapon {
     List<GameObject> m_partList;
 
     private Vector3 m_shootDirection = Vector3.up;
+    private float m_shootRotation = 0.0f;
 
     public delegate void Rotate();
     public static event Rotate onRotate;
@@ -101,6 +102,12 @@ public class HookWeapon : Weapon {
         m_shootDirection = newDirection;
     }
 
+    protected void setShootRotation(float newRot)
+    {
+        m_shootRotation = newRot;
+        transform.Rotate(new Vector3(newRot, 0.0f, 0.0f));
+    }
+
     /// <summary>
     /// Create a part to simulate a chain, 
     /// Updates the capculecollider to split balls
@@ -111,6 +118,7 @@ public class HookWeapon : Weapon {
         
         GameObject newPart = Instantiate(part, m_initialPosition, part.transform.rotation) as GameObject;
         m_partList.Add(newPart);
+        newPart.transform.Rotate(new Vector3(m_shootRotation, 0.0f, 0.0f));
         newPart.transform.parent = m_lastPart.transform;
         m_lastPart = newPart;
         float heightToAdd = newPart.GetComponent<CapsuleCollider>().height;

@@ -33,6 +33,8 @@ public class BallScript : MonoBehaviour {
     public float randomPercentage = 0.3f; //30% times an item appears
     public Vector3 ballGravity;
     private bool m_useGravity = true;
+
+    private bool m_isSplit = false;
     
 
     // Use this for initialization
@@ -75,6 +77,13 @@ public class BallScript : MonoBehaviour {
     /// </summary>
     public void Split()
     {
+        if(m_isSplit)
+        {
+            return;
+        }
+
+
+        m_isSplit = true;
         //Split the ball in two small ones and dissapear
         FindObjectOfType<GameManager>().SplitBall(GetComponent<Renderer>().material.color, this.transform);
         if (this.transform.localScale.x == 0.25)

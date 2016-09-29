@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
     private Direction m_lastDirection = Direction.Left;
 
     public float diagonalOffset = 0.2f;
+    public float diagonalAngle = 45.0f;
 
     public ParticleSystem shootParticleSystem;
 
@@ -274,6 +275,20 @@ public class Player : MonoBehaviour
         {
             //Return left PeepHole
             return -diagonalOffset;
+        }
+    }
+
+    public float getDiagonalAngle()
+    {
+        if (m_lastDirection == Direction.Right)
+        {
+            //Return right PeepHole
+            return -diagonalAngle;
+        }
+        else
+        {
+            //Return left PeepHole
+            return diagonalAngle;
         }
     }
 }
