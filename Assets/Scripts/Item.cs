@@ -54,11 +54,6 @@ public class Item : MonoBehaviour {
 
         switch (type)
         {
-            case ItemType.Shield:
-                {
-                    renderer.material.color = Color.green;
-                    break;
-                }
             case ItemType.Live:
                 {
                     //renderer.material.color = Color.yellow;
@@ -91,13 +86,30 @@ public class Item : MonoBehaviour {
     IEnumerator DestroyOnTime()
     {
         yield return new WaitForSeconds(m_lifeTime - blinkingTime);
-        InvokeRepeating("Blink", 0, 0.2f);
+        float blinkingAmount = 0.2f;
+        InvokeRepeating("Blink", 0, blinkingAmount);
         Destroy(gameObject, blinkingTime);
     }
 
     void Blink()
     {
-        renderer.enabled = !renderer.enabled;
+        if(type == ItemType.Shield)
+        {
+            ParticleSystem ps = m_Preview.GetComponentInChildren<ParticleSystem>();
+            if(ps.isPaused)
+            {
+                ps.Play();
+            }
+            else
+            {
+                ps.Pause();
+            }
+        }
+        else
+        {
+            renderer.enabled = !renderer.enabled;
+        }
+       
     }
 
     /// <summary>
