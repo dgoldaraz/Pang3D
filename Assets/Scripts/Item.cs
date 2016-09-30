@@ -29,7 +29,7 @@ public class Item : MonoBehaviour {
 	void Start ()
     {
         renderer = GetComponent<MeshRenderer>();
-        //setRandomItem();
+        setRandomItem();
         init();
         setTime(m_lifeTime);
         int numTypes = System.Enum.GetValues(typeof(ItemType)).Length;
