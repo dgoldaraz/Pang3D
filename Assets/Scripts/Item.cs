@@ -54,36 +54,11 @@ public class Item : MonoBehaviour {
 
         switch (type)
         {
-            //case ItemType.GrabHook:
-            //    {
-            //        renderer.material.color = Color.cyan;
-            //        break;
-            //    }
-            //case ItemType.MachineGun:
-            //    {
-            //        renderer.material.color = Color.gray;
-            //        break;
-            //    }
             case ItemType.Shield:
                 {
                     renderer.material.color = Color.green;
                     break;
                 }
-            //case ItemType.Dynamite:
-            //    {
-            //        renderer.material.color = Color.red;
-            //        break;
-            //    }
-            //case ItemType.StopTime:
-            //    {
-            //        renderer.material.color = Color.magenta;
-            //        break;
-            //    }
-            //case ItemType.Diagonal:
-            //    {
-            //        renderer.material.color = Color.white;
-            //        break;
-            //    }
             case ItemType.Live:
                 {
                     //renderer.material.color = Color.yellow;
