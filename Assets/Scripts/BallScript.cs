@@ -55,6 +55,10 @@ public class BallScript : MonoBehaviour {
         }
 
         renderer = GetComponent<MeshRenderer>();
+        if(splitPS == null)
+        {
+            splitPS = GetComponentInChildren<ParticleSystem>();
+        }
     }
 	
 	// Update is called once per frame
@@ -337,6 +341,6 @@ public class BallScript : MonoBehaviour {
     {
         SplitParticles();
         GetComponent<MeshRenderer>().enabled = false;
-        Destroy(this.gameObject, 0.2f);
+        Destroy(this.gameObject, 0.5f);
     }
 }
