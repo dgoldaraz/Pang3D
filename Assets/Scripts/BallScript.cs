@@ -35,7 +35,7 @@ public class BallScript : MonoBehaviour {
     private bool m_useGravity = true;
 
     private bool m_isSplit = false;
-    
+
 
     // Use this for initialization
     void Start ()
@@ -316,6 +316,18 @@ public class BallScript : MonoBehaviour {
                 }
             }
         }
+    }
+
+
+    void OnDrawGizmos()
+    {
+        Vector3 pos = transform.position;
+        float angle = startAngle;
+        angle *= Mathf.Deg2Rad;
+
+        Vector3 dest = new Vector3(Mathf.Sin(angle) * forceMultiplier, Mathf.Cos(angle) * forceMultiplier, 0.0f);
+
+        Gizmos.DrawLine(pos, dest);
     }
 
 
