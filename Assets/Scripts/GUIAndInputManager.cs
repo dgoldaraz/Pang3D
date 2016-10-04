@@ -18,16 +18,16 @@ public class GUIAndInputManager : MonoBehaviour {
 
     //Lives 
     public GameObject fPlayerLives;
-    public Image firstLiveF;
-    public Image secondLiveF;
-    public Image thirdLiveF;
-    public Text moreLivesF;
+    private Image firstLiveF;
+    private Image secondLiveF;
+    private Image thirdLiveF;
+    private Text moreLivesF;
 
     public GameObject sPlayerLives;
-    public Image firstLiveS;
-    public Image secondLiveS;
-    public Image thirdLiveS;
-    public Text moreLivesS;
+    private Image firstLiveS;
+    private Image secondLiveS;
+    private Image thirdLiveS;
+    private Text moreLivesS;
 
 
     private bool m_onPause = false;
@@ -56,6 +56,27 @@ public class GUIAndInputManager : MonoBehaviour {
 
         levelText.text = "Level " + m_gm.getLastLevel().ToString();
         scoreText.text = "Score " + m_gm.getScore().ToString();
+        fPlayerLives = GameObject.Find("Lives");
+        if (fPlayerLives != null)
+        {
+            //GetLives
+            Image[] livesImages = fPlayerLives.GetComponentsInChildren<Image>();
+            firstLiveS = livesImages[0];
+            secondLiveS = livesImages[1];
+            thirdLiveS = livesImages[2];
+            moreLivesS = fPlayerLives.GetComponentInChildren<Text>();
+        }
+        sPlayerLives = GameObject.Find("LivesSecond");
+        if (sPlayerLives != null)
+        {
+            //GetLives
+            Image[] livesImages = sPlayerLives.GetComponentsInChildren<Image>();
+            firstLiveF = livesImages[0];
+            secondLiveF = livesImages[1];
+            thirdLiveF = livesImages[2];
+            moreLivesF = sPlayerLives.GetComponentInChildren<Text>();
+        }
+
 
         Player[] pl = FindObjectsOfType<Player>();
         foreach(Player p in pl)

@@ -21,8 +21,6 @@ public class GameManager : MonoBehaviour {
     public delegate void CountDownChanged(int countDown);
     public static event CountDownChanged onCountDownChanged;
 
-    public ParticleSystem splitPS;
-
     private int m_countDown;
 
     struct PlayerInfo
@@ -254,16 +252,4 @@ public class GameManager : MonoBehaviour {
             }
         }
     }
-
-    public void SplitBall(Color c, Transform ballT)
-    {
-        if (splitPS && splitPS.isStopped)
-        {
-            splitPS.gameObject.transform.position = ballT.position;
-            splitPS.gameObject.transform.localScale = ballT.localScale;
-            splitPS.startColor = c;
-            splitPS.Play();
-        }
-    }
-
 }

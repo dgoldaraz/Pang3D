@@ -34,7 +34,7 @@ public class BallScript : MonoBehaviour {
     public Vector3 ballGravity;
     private bool m_useGravity = true;
 
-    private bool m_isSplit = false;
+    public ParticleSystem splitPS;
 
 
     // Use this for initialization
@@ -77,22 +77,14 @@ public class BallScript : MonoBehaviour {
     /// </summary>
     public void Split()
     {
-        if(m_isSplit)
-        {
-            return;
-        }
-
-
-        m_isSplit = true;
         //Split the ball in two small ones and dissapear
-        FindObjectOfType<GameManager>().SplitBall(GetComponent<Renderer>().material.color, this.transform);
         if (this.transform.localScale.x == 0.25)
         {
             //Destroy the ball
             if(!m_OnDinamite)
             {
                 //Destroy the object if we are not in dinamiteState
-                Destroy(this.gameObject);
+                DestroyBall();
                 //Ask the gameManager to check if there are more balls
                 FindObjectOfType<GameManager>().CheckEndGame();
             }
@@ -130,7 +122,7 @@ public class BallScript : MonoBehaviour {
             BallScript ch1BallScript = ch1.GetComponent<BallScript>();
             BallScript ch2BallScript = ch2.GetComponent<BallScript>();
 
-            Destroy(this.gameObject);
+            DestroyBall();
 
             if (m_isOnPause)
             {
@@ -330,5 +322,21 @@ public class BallScript : MonoBehaviour {
         Gizmos.DrawLine(pos, dest);
     }
 
+    void SplitParticles()
+    {
+        if (splitPS && splitPS.isStopped)
+        {
+            splitPS.gameObject.transform.position = transform.position;
+            splitPS.gameObject.transform.localScale = transform.localScale;
+            splitPS.startColor = GetComponent<Renderer>().material.color;
+            splitPS.Play();
+        }
+    }
 
+    void DestroyBall()
+    {
+        SplitParticles();
+        GetComponent<MeshRenderer>().enabled = false;
+        Destroy(this.gameObject, 0.2f);
+    }
 }
