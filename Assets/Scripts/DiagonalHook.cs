@@ -20,5 +20,6 @@ public class DiagonalHook : HookWeapon
 
         float newAngle = m_player.GetComponent<Player>().getDiagonalAngle();
         setShootRotation(newAngle);
+        m_player.GetComponent<Player>().resetShootSound();
     }
 }

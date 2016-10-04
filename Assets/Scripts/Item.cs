@@ -25,8 +25,12 @@ public class Item : MonoBehaviour {
 
     private GameObject m_Preview;
 
-	// Use this for initialization
-	void Start ()
+    public AudioClip explosionSound;
+    public AudioClip shieldSound;
+    public AudioClip lifeSound;
+
+    // Use this for initialization
+    void Start ()
     {
         renderer = GetComponent<MeshRenderer>();
         //setRandomItem();
@@ -128,32 +132,34 @@ public class Item : MonoBehaviour {
 
     void setHook(GameObject player)
     {
-        player.GetComponent<Player>().SetWeapon(hookGO);
+        player.GetComponent<Player>().setWeapon(hookGO);
     }
 
     void setDoubleHook(GameObject player)
     {
-        player.GetComponent<Player>().SetWeapon(doubleHookGO);
+        player.GetComponent<Player>().setWeapon(doubleHookGO);
     }
 
     void setGrabHook(GameObject player)
     {
-        player.GetComponent<Player>().SetWeapon(grabHookGO);
+        player.GetComponent<Player>().setWeapon(grabHookGO);
     }
 
     void setMachineGun(GameObject player)
     {
-        player.GetComponent<Player>().SetWeapon(machineGunGO);
+        player.GetComponent<Player>().setWeapon(machineGunGO);
     }
 
     void setShield(GameObject player)
     {
         player.GetComponent<Player>().setShield(true);
+        FindObjectOfType<GameManager>().playSound(shieldSound);
     }
 
     void setLive(GameObject player)
     {
         player.GetComponent<Player>().addLives();
+        FindObjectOfType<GameManager>().playSound(lifeSound);
     }
 
     void setDynamite()
@@ -163,6 +169,7 @@ public class Item : MonoBehaviour {
         {
             b.Dynamite( timeToExplode);
         }
+        FindObjectOfType<GameManager>().playSound(explosionSound);
     }
 
     void setStopTime()
@@ -176,7 +183,7 @@ public class Item : MonoBehaviour {
 
     void setDiagonal(GameObject player)
     {
-        player.GetComponent<Player>().SetWeapon(diagonalGO);
+        player.GetComponent<Player>().setWeapon(diagonalGO);
     }
 
     /// <summary>

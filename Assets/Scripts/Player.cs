@@ -53,6 +53,8 @@ public class Player : MonoBehaviour
     public float diagonalAngle = 45.0f;
 
     public ParticleSystem shootParticleSystem;
+    private AudioSource m_audiSource;
+    public AudioClip basicShootSound;
 
 
     // Use this for initialization
@@ -73,6 +75,7 @@ public class Player : MonoBehaviour
         shieldMeshRender.material.color = shieldColor;
         shieldMeshRender.enabled = false;
         m_isDestroyed = false;
+        m_audiSource = GetComponent<AudioSource>();
     }
 
 
@@ -144,7 +147,7 @@ public class Player : MonoBehaviour
             {
                 shootParticleSystem.Play();
             }
-
+            m_audiSource.Play();
         }
        
     }
@@ -236,11 +239,10 @@ public class Player : MonoBehaviour
     /// Sets the weapon that the user will use
     /// </summary>
     /// <param name="w"></param>
-    public void SetWeapon(GameObject w)
+    public void setWeapon(GameObject w)
     {
         weapon = w;
     }
-
 
     /// <summary>
     /// Return the colour of the player
@@ -290,5 +292,28 @@ public class Player : MonoBehaviour
             //Return left PeepHole
             return diagonalAngle;
         }
+    }
+    /// <summary>
+    /// Set the sound to the shooting
+    /// </summary>
+    /// <param name="sound"></param>
+    public void setAudioShoot(AudioClip sound)
+    {
+        m_audiSource.clip = sound;
+    }
+    /// <summary>
+    /// Set a basic sound for shooting
+    /// </summary>
+    public void resetShootSound()
+    {
+        m_audiSource.clip = basicShootSound;
+    }
+    /// <summary>
+    /// Play the given sound
+    /// </summary>
+    /// <param name="sound"></param>
+    public void playSound(AudioClip sound)
+    {
+        m_audiSource.PlayOneShot(sound);
     }
 }

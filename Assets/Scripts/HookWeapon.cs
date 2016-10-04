@@ -57,6 +57,7 @@ public class HookWeapon : Weapon {
         m_player = player;
         m_initialPosition = initPos;
         m_player.GetComponent<Player>().setCanShoot(false);
+        m_player.GetComponent<Player>().resetShootSound();
     }
 
     /// <summary>

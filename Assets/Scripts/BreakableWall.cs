@@ -13,13 +13,15 @@ public class BreakableWall : MonoBehaviour
     public float randomPercentage = 0.3f; //30% times an item appears
     bool isDestroyed;
 
+    public AudioClip wallBreak;
+
 
     void OnCollisionEnter(Collision coll)
     {
         if (coll.gameObject.CompareTag("Bullet") && !isDestroyed)
         {
             isDestroyed = true;
-
+            FindObjectOfType<GameManager>().playSound(wallBreak);
             if(Random.value <= randomPercentage)
             {
                 Instantiate(ItemWhenSplit, transform.position, Quaternion.identity);

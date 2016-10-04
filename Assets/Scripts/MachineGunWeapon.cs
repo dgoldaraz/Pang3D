@@ -6,7 +6,7 @@ public class MachineGunWeapon : Weapon {
     public GameObject bullet;
     public float bulletSpacing = 1.0f;
     public float speed = 6.0f;
-
+    public AudioClip machineGunSound;
     /// <summary>
     /// Create two bullets and set its velocity
     /// </summary>
@@ -24,5 +24,7 @@ public class MachineGunWeapon : Weapon {
         Vector3 velocity = new Vector3(0.0f, speed, 0.0f);
         bullet1.GetComponent<Rigidbody>().velocity = velocity;
         bullet2.GetComponent<Rigidbody>().velocity = velocity;
+
+        player.GetComponent<Player>().setAudioShoot(machineGunSound);
     }
 }

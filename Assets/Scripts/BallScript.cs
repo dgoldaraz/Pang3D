@@ -35,6 +35,7 @@ public class BallScript : MonoBehaviour {
     private bool m_useGravity = true;
 
     public ParticleSystem splitPS;
+    public AudioClip splitSound;
 
 
     // Use this for initialization
@@ -342,5 +343,6 @@ public class BallScript : MonoBehaviour {
         SplitParticles();
         GetComponent<MeshRenderer>().enabled = false;
         Destroy(this.gameObject, 0.5f);
+        FindObjectOfType<GameManager>().playSound(splitSound);
     }
 }

@@ -14,5 +14,6 @@ public class DoubleHookWeapon : HookWeapon {
         //Count how many hooks are in the scene to avoid more than 2
         HookWeapon[] h = FindObjectsOfType<HookWeapon>();
         player.GetComponent<Player>().setCanShoot(h.Length < 2);
+        m_player.GetComponent<Player>().resetShootSound();
     }
 }

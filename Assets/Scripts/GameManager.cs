@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour {
 
     public delegate void CountDownChanged(int countDown);
     public static event CountDownChanged onCountDownChanged;
+    private AudioSource m_audioSource;
 
     private int m_countDown;
 
@@ -94,7 +95,8 @@ public class GameManager : MonoBehaviour {
             }
         }
         m_countDown = secondsToEnd;
-        StartCountDown();
+        startCountDown();
+        m_audioSource = GetComponent<AudioSource>();
     }
 
     /// <summary>
@@ -228,12 +230,12 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public void StartCountDown()
+    public void startCountDown()
     {
         InvokeRepeating("DecreaseCountDown", 0.0f, 1.0f);
     }
 
-    void DecreaseCountDown()
+    void decreaseCountDown()
     {
         
         if (m_countDown == 0)
@@ -251,5 +253,19 @@ public class GameManager : MonoBehaviour {
                 onCountDownChanged(m_countDown);
             }
         }
+    }
+
+    public void setSound(AudioClip sound)
+    {
+        if(!m_audioSource.isPlaying)
+        {
+            m_audioSource.clip = sound;
+            m_audioSource.Play();
+        }
+    }
+
+    public void playSound(AudioClip sound)
+    {
+        m_audioSource.PlayOneShot(sound);
     }
 }

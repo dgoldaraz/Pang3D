@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 public class GrabHookWeapon : HookWeapon
 {
+
+
+    public AudioClip hookSound;
+    public AudioClip hookCollideSound;
     /// <summary>
     /// Override of the collision enter to stop the hook
     /// </summary>
@@ -13,6 +17,7 @@ public class GrabHookWeapon : HookWeapon
         {
             setMovement(false);
             StartCoroutine(ChangeColourOnTIme());
+            FindObjectOfType<GameManager>().playSound(hookCollideSound);
         }
         else
         {
@@ -47,4 +52,10 @@ public class GrabHookWeapon : HookWeapon
         Destroy(gameObject);
         m_player.GetComponent<Player>().setCanShoot(true);
     }
-}
+
+    public override void Shoot(GameObject player, Vector3 initPos)
+    {
+        base.Shoot(player, initPos);
+        player.GetComponent<Player>().setAudioShoot(hookSound);
+    }
+ }
