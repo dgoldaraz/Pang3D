@@ -289,9 +289,13 @@ public class BallScript : MonoBehaviour {
     /// <param name="timeToSplit"></param>
     public void Dynamite(float timeToSplit)
     {
-        m_timeToSplit = timeToSplit;
-        m_OnDinamite = true;
-        StartCoroutine(SplitOnTime());
+        if(this.transform.localScale.x > 0.25)
+        {
+            //Only dynamite if the object it's bigger
+            m_timeToSplit = timeToSplit;
+            m_OnDinamite = true;
+            StartCoroutine(SplitOnTime());
+        }
     }
 
     IEnumerator SplitOnTime()
@@ -331,18 +335,21 @@ public class BallScript : MonoBehaviour {
     {
         if (splitPS && splitPS.isStopped)
         {
+            splitPS.transform.parent = null;
             splitPS.gameObject.transform.position = transform.position;
             splitPS.gameObject.transform.localScale = transform.localScale;
             splitPS.startColor = GetComponent<Renderer>().material.color;
             splitPS.Play();
+
+            Destroy(splitPS, 0.5f);
         }
     }
 
     void DestroyBall()
     {
         SplitParticles();
-        GetComponent<MeshRenderer>().enabled = false;
-        Destroy(this.gameObject, 0.5f);
         FindObjectOfType<GameManager>().playSound(splitSound);
+        Destroy(this.gameObject);
+        
     }
 }
