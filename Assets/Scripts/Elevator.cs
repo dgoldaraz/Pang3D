@@ -8,6 +8,9 @@ public class Elevator : MonoBehaviour {
     public Transform lowTransform;
     public Transform highTransform;
 
+    public Light greenLight;
+    public Light redLight;
+
     public enum Position { Up, Down };
     public Position currentPosition;
     public float speed = 3.0f;
@@ -39,6 +42,14 @@ public class Elevator : MonoBehaviour {
                 }
             }
         }
+        if(currentPosition == Position.Up)
+        {
+            greenLight.enabled = false;
+        }
+        else
+        {
+            redLight.enabled = false;
+        }
 	}
 
     // Update is called once per frame
@@ -62,6 +73,7 @@ public class Elevator : MonoBehaviour {
             //Move up
             m_isMoving = true;
             destination = Position.Up;
+            greenLight.enabled = false;
         }
     }
     /// <summary>
@@ -74,6 +86,7 @@ public class Elevator : MonoBehaviour {
             //Move down
             m_isMoving = true;
             destination = Position.Down;
+            redLight.enabled = false;
         }
     }
     /// <summary>
@@ -98,6 +111,7 @@ public class Elevator : MonoBehaviour {
                         {
                             m_isMoving = false;
                             currentPosition = Position.Up;
+                            redLight.enabled = true;
                         }
                         break;
                     }
@@ -112,6 +126,7 @@ public class Elevator : MonoBehaviour {
                         {
                             m_isMoving = false;
                             currentPosition = Position.Down;
+                            greenLight.enabled = true;
                         }
                         break;
                     }
