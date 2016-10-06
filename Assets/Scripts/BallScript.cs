@@ -194,6 +194,7 @@ public class BallScript : MonoBehaviour {
     /// </summary>
     public void Pause(float time)
     {
+       
         if(!m_rigidBody)
         {
             m_rigidBody = this.GetComponent<Rigidbody>();
@@ -217,6 +218,7 @@ public class BallScript : MonoBehaviour {
             cAngularVelocity = m_rigidBody.angularVelocity;
             m_rigidBody.angularVelocity = Vector3.zero;
             m_useGravity = false;
+            m_rigidBody.isKinematic = true;
         }
 
         if(time != -1)
@@ -270,6 +272,7 @@ public class BallScript : MonoBehaviour {
         yield return new WaitForSeconds(time);
 
         m_useGravity = true;
+        m_rigidBody.isKinematic = false;
         if (!m_restartWithForce)
         {
             m_rigidBody.velocity = cVelocity * 1.5f;
