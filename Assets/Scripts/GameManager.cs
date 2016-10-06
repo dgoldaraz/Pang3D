@@ -232,7 +232,7 @@ public class GameManager : MonoBehaviour {
 
     public void startCountDown()
     {
-        InvokeRepeating("DecreaseCountDown", 0.0f, 1.0f);
+        InvokeRepeating("decreaseCountDown", 0.0f, 1.0f);
     }
 
     void decreaseCountDown()
