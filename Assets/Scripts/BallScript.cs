@@ -69,12 +69,6 @@ public class BallScript : MonoBehaviour {
         {
             m_rigidBody.AddForce(ballGravity * m_rigidBody.mass);
         }
-        
-    }
-
-    void Update()
-    {
-
     }
     /// <summary>
     /// Split the ball in two small balls
@@ -311,14 +305,12 @@ public class BallScript : MonoBehaviour {
     {
         if(other.gameObject.CompareTag("Shield"))
         {
-            RaycastHit hit;
             if(m_rigidBody)
             {
-                if (Physics.Raycast(transform.position, m_rigidBody.velocity.normalized, out hit))
-                {
-                    m_rigidBody.AddForce(hit.point.normalized * 5.0f, ForceMode.Impulse);
-                }
+                m_rigidBody.AddForce(m_rigidBody.velocity * -2.0f, ForceMode.Impulse);
             }
+            //Remove the shield
+            other.GetComponentInParent<Player>().setShield(false);
         }
     }
 

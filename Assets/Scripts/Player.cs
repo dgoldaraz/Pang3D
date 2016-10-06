@@ -56,6 +56,8 @@ public class Player : MonoBehaviour
 
     private GameManager m_gm;
 
+    private bool m_hideShieldInvoked;
+
     // Use this for initialization
     void Start()
     {
@@ -76,6 +78,7 @@ public class Player : MonoBehaviour
         m_isDestroyed = false;
         m_audiSource = GetComponent<AudioSource>();
         m_gm = FindObjectOfType<GameManager>();
+        m_hideShieldInvoked = false;
     }
 
 
@@ -170,15 +173,13 @@ public class Player : MonoBehaviour
     {
         if (coll.gameObject.CompareTag("Ball") && !m_isDestroyed)
         {
-            if(m_shieldOn)
+            if(!m_shieldOn)
             {
-                //Avoid the hit by the shield!
-                setShield(false);
-
-            }
-            else
-            {
-                
+            //    //Avoid the hit by the shield!
+            //    setShield(false);
+            //}
+            //else
+            //{ 
                 m_isDestroyed = true;
                 if (onPlayerHit != null)
                 {
@@ -241,11 +242,32 @@ public class Player : MonoBehaviour
     /// <param name="s"></param>
     public void setShield(bool s)
     {
-        if(m_shieldOn != s)
+        if (m_shieldOn != s)
         {
-            shield.GetComponent<MeshRenderer>().enabled = s;
-            m_shieldOn = s;
+            if(!s && !m_hideShieldInvoked)
+            {
+                m_hideShieldInvoked = true;
+                Invoke("hideShield", 0.2f);
+            }
+            else
+            {
+                showShield();
+            }
+            
         }
+    }
+
+    public void hideShield()
+    {
+        shield.GetComponent<MeshRenderer>().enabled = false;
+        m_shieldOn = false;
+        m_hideShieldInvoked = false;
+    }
+
+    public void showShield()
+    {
+        shield.GetComponent<MeshRenderer>().enabled = true;
+        m_shieldOn = true;
     }
 
     public float getDiagonalOffset()
