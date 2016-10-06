@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour {
     public delegate void ScoreChanged(int score);
     public static event ScoreChanged onScoreChanged;
 
-
     public delegate void CountDownChanged(int countDown);
     public static event CountDownChanged onCountDownChanged;
     private AudioSource m_audioSource;
@@ -29,9 +28,6 @@ public class GameManager : MonoBehaviour {
         public string playerName;
         public int lives;
     }
-
-
-
     
     private List<PlayerInfo> m_playerInfo = new List<PlayerInfo>();
     /// <summary>
@@ -79,24 +75,16 @@ public class GameManager : MonoBehaviour {
                 m_playerInfo.Add(pStruct);
             }
         }
-        else
-        {
-            Player[] m_players = FindObjectsOfType<Player>();
-            //Init the list
-            foreach (Player p in m_players)
-            {
-                foreach(PlayerInfo pp in m_playerInfo)
-                {
-                    if(pp.playerName == p.gameObject.name)
-                    {
-                        p.setLives(pp.lives);
-                    }
-                }
-            }
-        }
+
         m_countDown = secondsToEnd;
         startCountDown();
         m_audioSource = GetComponent<AudioSource>();
+    }
+
+    void OnDestroy()
+    {
+        Player.onPlayerHit -= updatePlayersHit;
+        Player.onPlayerAddLive -= updatePlayerLives;
     }
 
     /// <summary>
@@ -105,7 +93,6 @@ public class GameManager : MonoBehaviour {
     /// <param name="player"></param>
     void updatePlayersHit(GameObject player)
     {
-        
         //check if the game ends
         bool endGame = true;
         for(int i= 0; i < m_playerInfo.Count; ++i)
@@ -120,6 +107,7 @@ public class GameManager : MonoBehaviour {
                     endGame = false;
                     break;
                 }
+                Debug.Log("Player " + pp.playerName + " hit, lives: " + pp.lives);
             }
             else
             {
@@ -130,9 +118,12 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        if(endGame || maxNumLives == 0)
+
+        Player.onPlayerHit -= updatePlayersHit;
+        Player.onPlayerAddLive -= updatePlayerLives;
+
+        if (endGame || maxNumLives == 0)
         {
-            //
             FindObjectOfType<GUIAndInputManager>().showLosePanel();
             //Return to main level
             m_score = 0;
@@ -140,19 +131,19 @@ public class GameManager : MonoBehaviour {
         else
         {
             //Pause Everything!
-            //Debug.Log("Pause Things!");
             BallScript[] balls = FindObjectsOfType<BallScript>();
             foreach(BallScript b in balls)
             {
                 b.Pause(-1);
             }
-            Player.onPlayerHit -= updatePlayersHit;
-            Player.onPlayerAddLive -= updatePlayerLives;
-            StartCoroutine(Restart());
+            m_countDown = secondsToEnd;
+            StartCoroutine(RestartLevel());
         }
+
+
     }
 
-    IEnumerator Restart()
+    IEnumerator RestartLevel()
     {
         yield return new WaitForSeconds(2);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -170,6 +161,7 @@ public class GameManager : MonoBehaviour {
             {
                 PlayerInfo pp = m_playerInfo[i];
                 pp.lives = m_playerInfo[i].lives + 1;
+                Debug.Log("Player " + pp.playerName + " add live: " + pp.lives);
                 m_playerInfo[i] = pp;
             }
         }
@@ -229,12 +221,17 @@ public class GameManager : MonoBehaviour {
             onScoreChanged(m_score);
         }
     }
-
+    /// <summary>
+    /// Method to start Count Down
+    /// </summary>
     public void startCountDown()
     {
         InvokeRepeating("decreaseCountDown", 0.0f, 1.0f);
     }
 
+    /// <summary>
+    /// Method that decrease the count down of the game
+    /// </summary>
     void decreaseCountDown()
     {
         
@@ -254,7 +251,10 @@ public class GameManager : MonoBehaviour {
             }
         }
     }
-
+    /// <summary>
+    /// Set a sound in the audioSource and Play it
+    /// </summary>
+    /// <param name="sound"></param>
     public void setSound(AudioClip sound)
     {
         if(!m_audioSource.isPlaying)
@@ -263,9 +263,58 @@ public class GameManager : MonoBehaviour {
             m_audioSource.Play();
         }
     }
-
+    /// <summary>
+    /// Play an instant sound
+    /// </summary>
+    /// <param name="sound"></param>
     public void playSound(AudioClip sound)
     {
         m_audioSource.PlayOneShot(sound);
+    }
+    /// <summary>
+    /// True if the player have 0 lives
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public bool shouldPlayerDestroy(GameObject player)
+    {
+        //Check if the player has lives
+        for (int i = 0; i < m_playerInfo.Count; ++i)
+        {
+            if (m_playerInfo[i].playerName == player.name)
+            {
+               if(m_playerInfo[i].lives == 0)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /// <summary>
+    /// Return the lives of the player
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public int getLivesFrom(GameObject player)
+    {
+        for (int i = 0; i < m_playerInfo.Count; ++i)
+        {
+            if (m_playerInfo[i].playerName == player.name)
+            {
+                return m_playerInfo[i].lives;
+            }
+        }
+        return -1; // Error
+    }
+
+    public void restartGame()
+    {
+        for (int i = 0; i < m_playerInfo.Count; ++i)
+        {
+            PlayerInfo pp = m_playerInfo[i];
+            pp.lives = maxNumLives;
+            m_playerInfo[i] = pp;
+        }
     }
 }

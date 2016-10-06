@@ -30,8 +30,6 @@ public class Player : MonoBehaviour
 
     private Elevator m_elevator = null;
 
-    public int m_lives = 3;
-
     public GameObject weapon;
     public GameObject peepHole;
 
@@ -56,6 +54,7 @@ public class Player : MonoBehaviour
     private AudioSource m_audiSource;
     public AudioClip basicShootSound;
 
+    private GameManager m_gm;
 
     // Use this for initialization
     void Start()
@@ -76,6 +75,7 @@ public class Player : MonoBehaviour
         shieldMeshRender.enabled = false;
         m_isDestroyed = false;
         m_audiSource = GetComponent<AudioSource>();
+        m_gm = FindObjectOfType<GameManager>();
     }
 
 
@@ -152,27 +152,11 @@ public class Player : MonoBehaviour
        
     }
     /// <summary>
-    /// set the number of lives for the player
-    /// </summary>
-    /// <param name="nLives"></param>
-    public void setLives(int nLives)
-    {
-        m_lives = nLives;
-    }
-    /// <summary>
-    /// Get the number of livesin the player
-    /// </summary>
-    /// <returns></returns>
-    public int getLives()
-    {
-        return m_lives;
-    }
-    /// <summary>
     /// Add one live to the player
     /// </summary>
     public void addLives()
     {
-        m_lives++;
+        //Add Live to GameManager
         if (onPlayerAddLive != null)
         {
             onPlayerAddLive(gameObject);
@@ -196,14 +180,12 @@ public class Player : MonoBehaviour
             {
                 
                 m_isDestroyed = true;
-                m_lives--;
-                Debug.Log("Dead, you have " + m_lives);
                 if (onPlayerHit != null)
                 {
                     onPlayerHit(gameObject);
                 }
 
-                if (m_lives == 0)
+                if (m_gm.shouldPlayerDestroy(gameObject))
                 {
                     //disappear
                     Destroy(gameObject);

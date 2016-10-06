@@ -41,7 +41,7 @@ public class GUIAndInputManager : MonoBehaviour {
         m_gm = FindObjectOfType<GameManager>();
         GameManager.onScoreChanged += updateScore;
         GameManager.onCountDownChanged += updateTime;
-        Player.onPlayerHit += updateLives;
+        //Player.onPlayerHit += updateLives;
         Player.onPlayerAddLive += updateLives;
         if(pausePanel)
         {
@@ -61,20 +61,20 @@ public class GUIAndInputManager : MonoBehaviour {
         {
             //GetLives
             Image[] livesImages = fPlayerLives.GetComponentsInChildren<Image>();
-            firstLiveS = livesImages[0];
-            secondLiveS = livesImages[1];
-            thirdLiveS = livesImages[2];
-            moreLivesS = fPlayerLives.GetComponentInChildren<Text>();
+            firstLiveF = livesImages[0];
+            secondLiveF = livesImages[1];
+            thirdLiveF = livesImages[2];
+            moreLivesF = fPlayerLives.GetComponentInChildren<Text>();
         }
         sPlayerLives = GameObject.Find("LivesSecond");
         if (sPlayerLives != null)
         {
             //GetLives
             Image[] livesImages = sPlayerLives.GetComponentsInChildren<Image>();
-            firstLiveF = livesImages[0];
-            secondLiveF = livesImages[1];
-            thirdLiveF = livesImages[2];
-            moreLivesF = sPlayerLives.GetComponentInChildren<Text>();
+            firstLiveS = livesImages[0];
+            secondLiveS = livesImages[1];
+            thirdLiveS = livesImages[2];
+            moreLivesS = sPlayerLives.GetComponentInChildren<Text>();
         }
 
 
@@ -83,7 +83,7 @@ public class GUIAndInputManager : MonoBehaviour {
         {
             updateLives(p.gameObject);
         }
-        if(pl.Length <2)
+        if(pl.Length <2 && sPlayerLives)
         {
             sPlayerLives.SetActive(false);
         }
@@ -124,21 +124,22 @@ public class GUIAndInputManager : MonoBehaviour {
         }
     }
 
-    public void setTimeOn()
+    public void restartGame()
     {
         //hideMenu
         Time.timeScale = m_timeScale;
         m_onPause = false;
+        m_gm.restartGame();
     }
 
     public void showWinPanel()
     {
         winTextPanel.transform.parent.gameObject.SetActive(true);
         countDownText.text = "5";
-        InvokeRepeating("DecreaseCountDown", 0.0f, 1.0f);
+        InvokeRepeating("decreaseCountDown", 0.0f, 1.0f);
     }
 
-    void DecreaseCountDown()
+    void decreaseCountDown()
     {
         int countDown = int.Parse(countDownText.text);
         if (countDown == 0)
@@ -189,8 +190,8 @@ public class GUIAndInputManager : MonoBehaviour {
         if(player.CompareTag("Player"))
         {
             //FirstPlayer
-            int lives = player.GetComponent<Player>().getLives();
-            if(lives < 4)
+            int lives = m_gm.getLivesFrom(player);
+            if (lives < 4)
             {
                 //Images
                 firstLiveF.gameObject.SetActive(false);
@@ -201,11 +202,11 @@ public class GUIAndInputManager : MonoBehaviour {
                 {
                     firstLiveF.gameObject.SetActive(true);
                 }
-                if(lives > 1)
+                if (lives > 1)
                 {
                     secondLiveF.gameObject.SetActive(true);
                 }
-                if(lives > 2)
+                if (lives > 2)
                 {
                     thirdLiveF.gameObject.SetActive(true);
                 }
@@ -224,7 +225,7 @@ public class GUIAndInputManager : MonoBehaviour {
             //SecondPlayer
 
             //FirstPlayer
-            int lives = player.GetComponent<Player>().getLives();
+            int lives = m_gm.getLivesFrom(player);
             if (lives < 4)
             {
                 //Images
