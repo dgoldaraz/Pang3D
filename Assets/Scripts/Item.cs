@@ -29,11 +29,16 @@ public class Item : MonoBehaviour {
     public AudioClip shieldSound;
     public AudioClip lifeSound;
 
+    public bool setRandom = true;
+
     // Use this for initialization
     void Start ()
     {
         renderer = GetComponent<MeshRenderer>();
-        //setRandomItem();
+        if(setRandom)
+        {
+            setRandomItem();
+        }
         init();
         setTime(m_lifeTime);
         int numTypes = System.Enum.GetValues(typeof(ItemType)).Length;

@@ -53,6 +53,8 @@ public class Player : MonoBehaviour
     public ParticleSystem shootParticleSystem;
     private AudioSource m_audiSource;
     public AudioClip basicShootSound;
+    public AudioClip playerHit;
+    public AudioClip shieldHitSound;
 
     private GameManager m_gm;
 
@@ -175,11 +177,7 @@ public class Player : MonoBehaviour
         {
             if(!m_shieldOn)
             {
-            //    //Avoid the hit by the shield!
-            //    setShield(false);
-            //}
-            //else
-            //{ 
+                playSound(playerHit);
                 m_isDestroyed = true;
                 if (onPlayerHit != null)
                 {
@@ -248,6 +246,7 @@ public class Player : MonoBehaviour
             {
                 m_hideShieldInvoked = true;
                 Invoke("hideShield", 0.2f);
+                playSound(shieldHitSound);
             }
             else
             {
@@ -260,6 +259,7 @@ public class Player : MonoBehaviour
     public void hideShield()
     {
         shield.GetComponent<MeshRenderer>().enabled = false;
+        shield.GetComponent<SphereCollider>().enabled = false;
         m_shieldOn = false;
         m_hideShieldInvoked = false;
     }
@@ -267,6 +267,7 @@ public class Player : MonoBehaviour
     public void showShield()
     {
         shield.GetComponent<MeshRenderer>().enabled = true;
+        shield.GetComponent<SphereCollider>().enabled = true;
         m_shieldOn = true;
     }
 

@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour {
     public delegate void CountDownChanged(int countDown);
     public static event CountDownChanged onCountDownChanged;
     private AudioSource m_audioSource;
+    public AudioClip winSound;
 
     private int m_countDown;
 
@@ -139,13 +140,11 @@ public class GameManager : MonoBehaviour {
             m_countDown = secondsToEnd;
             StartCoroutine(RestartLevel());
         }
-
-
     }
 
     IEnumerator RestartLevel()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -181,6 +180,7 @@ public class GameManager : MonoBehaviour {
             FindObjectOfType<GUIAndInputManager>().showWinPanel();
             //Add 500 points for wining
             addPoints(500);
+            playSound(winSound);
         }
     }
     /// <summary>
