@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
     public static event CountDownChanged onCountDownChanged;
     private AudioSource m_audioSource;
     public AudioClip winSound;
+    public AudioClip[] bckSongs;
 
     private int m_countDown;
 
@@ -48,6 +49,7 @@ public class GameManager : MonoBehaviour {
             //Assign the instance and don't destroy
             instance = this;
             GameObject.DontDestroyOnLoad(gameObject);
+            
         }
     }
 
@@ -55,6 +57,7 @@ public class GameManager : MonoBehaviour {
     void Start ()
     {
         Initialize();
+        setRandomSong();
     }
 	
     void Initialize()
@@ -257,11 +260,10 @@ public class GameManager : MonoBehaviour {
     /// <param name="sound"></param>
     public void setSound(AudioClip sound)
     {
-        if(!m_audioSource.isPlaying)
-        {
-            m_audioSource.clip = sound;
-            m_audioSource.Play();
-        }
+        m_audioSource.Stop();
+        m_audioSource.clip = sound;
+        m_audioSource.Play();
+
     }
     /// <summary>
     /// Play an instant sound
@@ -316,5 +318,12 @@ public class GameManager : MonoBehaviour {
             pp.lives = maxNumLives;
             m_playerInfo[i] = pp;
         }
+    }
+
+    public void setRandomSong()
+    {
+        //Select a random theme and play it
+        AudioClip s = bckSongs[Random.Range(0, bckSongs.Length - 1)];
+        setSound(s);
     }
 }

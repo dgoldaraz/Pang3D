@@ -145,6 +145,7 @@ public class GUIAndInputManager : MonoBehaviour {
         if (countDown == 0)
         {
             GameObject.FindObjectOfType<LevelManager>().LoadNextLevel();
+            GameObject.FindObjectOfType<GameManager>().setRandomSong();
         }
         else
         {
