@@ -139,6 +139,7 @@ public class HookWeapon : Weapon {
     /// <param name="coll"></param>
     protected virtual void OnCollisionEnter(Collision coll)
     {
+        string kk = coll.gameObject.name;
         if(m_player)
         {
             m_player.GetComponent<Player>().setCanShoot(true);

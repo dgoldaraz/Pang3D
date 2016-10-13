@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
 
     private bool m_canShoot = true;
 
-    public GameObject beltModel;
+    public GameObject mainCharacter;
     public GameObject shield;
 
     public Color playerColor = Color.blue;
@@ -71,7 +71,12 @@ public class Player : MonoBehaviour
         m_xmax = rightMost.x - padding;
         m_xmin = leftMost.x + padding;
 
-        beltModel.GetComponent<MeshRenderer>().material.color = playerColor;
+        //Change second Material Colour
+        if(mainCharacter)
+        {
+            mainCharacter.GetComponent<MeshRenderer>().materials[1].color = playerColor;
+        }
+
         MeshRenderer shieldMeshRender = shield.GetComponent<MeshRenderer>();
         Color shieldColor = Color.Lerp(playerColor, Color.white, 0.3f);
         shieldColor.a = shieldMeshRender.material.color.a;

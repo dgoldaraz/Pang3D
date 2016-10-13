@@ -224,7 +224,6 @@ public class GUIAndInputManager : MonoBehaviour {
         {
             //SecondPlayer
 
-            //FirstPlayer
             int lives = m_gm.getLivesFrom(player);
             if (lives < 4)
             {
