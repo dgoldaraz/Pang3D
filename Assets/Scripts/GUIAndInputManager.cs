@@ -191,6 +191,7 @@ public class GUIAndInputManager : MonoBehaviour {
         {
             //FirstPlayer
             int lives = m_gm.getLivesFrom(player);
+            moreLivesF.gameObject.SetActive(false);
             if (lives < 4)
             {
                 //Images
@@ -214,7 +215,7 @@ public class GUIAndInputManager : MonoBehaviour {
             }
             else
             {
-                moreLivesF.gameObject.SetActive(false);
+                moreLivesF.gameObject.SetActive(true);
                 //number
                 int extraLives = lives - 3;
                 moreLivesF.text = "x" + extraLives.ToString();

@@ -60,15 +60,6 @@ public class Item : MonoBehaviour {
             m_Preview.transform.parent = gameObject.transform;
             renderer = m_Preview.GetComponent<MeshRenderer>();
         }
-
-        switch (type)
-        {
-            case ItemType.Live:
-                {
-                    //renderer.material.color = Color.yellow;
-                    break;
-                }
-        }
     }
     /// <summary>
     /// Sets the type of the item randomly
