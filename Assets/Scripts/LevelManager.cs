@@ -13,10 +13,6 @@ public class LevelManager : MonoBehaviour {
 	
 	public void LoadLevel(string name)
 	{
-		if(mPlayer)
-		{
-			mPlayer.setLastLevel( SceneManager.GetActiveScene().buildIndex);
-		}
 		Debug.Log ("Load this level: " + name);
         SceneManager.LoadScene(name);
 	}
@@ -31,7 +27,7 @@ public class LevelManager : MonoBehaviour {
     {
         if (mPlayer)
         {
-            mPlayer.setLastLevel(SceneManager.GetActiveScene().buildIndex);
+            mPlayer.setLastLevel(SceneManager.GetActiveScene().buildIndex + 1);
         }
         print(SceneManager.GetActiveScene().buildIndex);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);

@@ -28,6 +28,7 @@ public class Item : MonoBehaviour {
     public AudioClip explosionSound;
     public AudioClip shieldSound;
     public AudioClip lifeSound;
+    public AudioClip weaponSound;
 
     public bool setRandom = true;
 
@@ -129,21 +130,25 @@ public class Item : MonoBehaviour {
     void setHook(GameObject player)
     {
         player.GetComponent<Player>().setWeapon(hookGO);
+        FindObjectOfType<GameManager>().playSound(weaponSound);
     }
 
     void setDoubleHook(GameObject player)
     {
         player.GetComponent<Player>().setWeapon(doubleHookGO);
+        FindObjectOfType<GameManager>().playSound(weaponSound);
     }
 
     void setGrabHook(GameObject player)
     {
         player.GetComponent<Player>().setWeapon(grabHookGO);
+        FindObjectOfType<GameManager>().playSound(weaponSound);
     }
 
     void setMachineGun(GameObject player)
     {
         player.GetComponent<Player>().setWeapon(machineGunGO);
+        FindObjectOfType<GameManager>().playSound(weaponSound);
     }
 
     void setShield(GameObject player)
@@ -175,11 +180,13 @@ public class Item : MonoBehaviour {
         {
             b.Pause(pauseBallTime);
         }
+        FindObjectOfType<GameManager>().playSound(weaponSound);
     }
 
     void setDiagonal(GameObject player)
     {
         player.GetComponent<Player>().setWeapon(diagonalGO);
+        FindObjectOfType<GameManager>().playSound(weaponSound);
     }
 
     /// <summary>

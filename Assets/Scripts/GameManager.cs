@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour {
     private static int lastLevel = 1;
 
     private int m_score = 0;
+    private int m_initialScore = 100;
 
     public delegate void ScoreChanged(int score);
     public static event ScoreChanged onScoreChanged;
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour {
     public AudioClip[] bckSongs;
 
     private int m_countDown;
+    private bool m_initialize = false;
 
     struct PlayerInfo
     {
@@ -59,9 +61,16 @@ public class GameManager : MonoBehaviour {
         Initialize();
         setRandomSong();
     }
+
+    public bool isInitialize()
+    {
+        return m_initialize;
+    }
 	
     void Initialize()
     {
+        m_initialize = true;
+        setLastLevel(SceneManager.GetActiveScene().buildIndex);
         //Add a listerner to the player hit
         Player.onPlayerHit += updatePlayersHit;
         Player.onPlayerAddLive += updatePlayerLives;
@@ -80,9 +89,10 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        m_countDown = secondsToEnd;
-        startCountDown();
+        m_countDown = secondsToEnd +1;
         m_audioSource = GetComponent<AudioSource>();
+        restartCountDown();
+        m_initialScore = m_score;
     }
 
     void OnDestroy()
@@ -126,6 +136,7 @@ public class GameManager : MonoBehaviour {
         Player.onPlayerHit -= updatePlayersHit;
         Player.onPlayerAddLive -= updatePlayerLives;
 
+        StopAllCoroutines();
         if (endGame || maxNumLives == 0)
         {
             FindObjectOfType<GUIAndInputManager>().showLosePanel();
@@ -140,7 +151,8 @@ public class GameManager : MonoBehaviour {
             {
                 b.Pause(-1);
             }
-            m_countDown = secondsToEnd;
+
+           
             StartCoroutine(RestartLevel());
         }
     }
@@ -180,10 +192,12 @@ public class GameManager : MonoBehaviour {
         if(balls.Length == 1)
         {
             //Done
+            CancelInvoke("decreaseCountDown");
             FindObjectOfType<GUIAndInputManager>().showWinPanel();
             //Add 500 points for wining
             addPoints(500);
             playSound(winSound);
+            m_initialScore = m_score;
         }
     }
     /// <summary>
@@ -243,7 +257,7 @@ public class GameManager : MonoBehaviour {
             //Finish the game if the countdown is 0
             FindObjectOfType<GUIAndInputManager>().showLosePanel();
             //Return to main level
-            m_score = 0;
+            m_score = m_initialScore;
         }
         else
         {
@@ -253,6 +267,13 @@ public class GameManager : MonoBehaviour {
                 onCountDownChanged(m_countDown);
             }
         }
+    }
+
+    public void restartCountDown()
+    {
+        CancelInvoke("decreaseCountDown");
+        m_countDown = secondsToEnd +1;
+        startCountDown();
     }
     /// <summary>
     /// Set a sound in the audioSource and Play it
@@ -318,6 +339,7 @@ public class GameManager : MonoBehaviour {
             pp.lives = maxNumLives;
             m_playerInfo[i] = pp;
         }
+        removeObservers();
     }
 
     public void setRandomSong()
@@ -325,5 +347,11 @@ public class GameManager : MonoBehaviour {
         //Select a random theme and play it
         AudioClip s = bckSongs[Random.Range(0, bckSongs.Length - 1)];
         setSound(s);
+    }
+
+    public void removeObservers()
+    {
+        Player.onPlayerHit -= updatePlayersHit;
+        Player.onPlayerAddLive -= updatePlayerLives;
     }
 }

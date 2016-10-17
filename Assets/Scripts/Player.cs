@@ -59,6 +59,7 @@ public class Player : MonoBehaviour
     private GameManager m_gm;
 
     private bool m_hideShieldInvoked;
+    private bool m_canMove = true;
 
     // Use this for initialization
     void Start()
@@ -70,9 +71,9 @@ public class Player : MonoBehaviour
         //Apply a padding of the walls
         m_xmax = rightMost.x - padding;
         m_xmin = leftMost.x + padding;
-
+        m_canMove = true;
         //Change second Material Colour
-        if(mainCharacter)
+        if (mainCharacter)
         {
             mainCharacter.GetComponent<MeshRenderer>().materials[1].color = playerColor;
         }
@@ -92,7 +93,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Move();
+        if(m_canMove)
+        {
+            Move();
+        }
+        
     }
     /// <summary>
     /// Function that deals with the movement of the player
@@ -102,28 +107,28 @@ public class Player : MonoBehaviour
         Vector3 newPos = transform.position;
         bool movement = false;
 
-        if (Input.GetKey(rightKey))
+        if (Input.GetKey(rightKey) || Input.GetKey(KeyCode.RightArrow))
         {
             //Right
             movement = true;
             newPos += Vector3.right * speed * Time.deltaTime;
             m_lastDirection = Direction.Right;
         }
-        else if (Input.GetKey(leftKey))
+        else if (Input.GetKey(leftKey) || Input.GetKey(KeyCode.LeftArrow))
         {
             //Left
             movement = true;
             newPos += Vector3.left * speed * Time.deltaTime;
             m_lastDirection = Direction.Left;
         }
-        else if (Input.GetKey(upKey))
+        else if (Input.GetKey(upKey) || Input.GetKey(KeyCode.UpArrow))
         {
             if (m_elevator != null)
             {
                 m_elevator.GoUp();
             }
         }
-        else if (Input.GetKey(downKey))
+        else if (Input.GetKey(downKey) || Input.GetKey(KeyCode.DownArrow))
         {
             if (m_elevator != null)
             {
@@ -184,6 +189,8 @@ public class Player : MonoBehaviour
             {
                 playSound(playerHit);
                 m_isDestroyed = true;
+                GetComponent<Rigidbody>().isKinematic = true;
+                m_canMove = false;
                 if (onPlayerHit != null)
                 {
                     onPlayerHit(gameObject);

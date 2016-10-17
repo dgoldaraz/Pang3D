@@ -38,10 +38,18 @@ public class GUIAndInputManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        m_gm = FindObjectOfType<GameManager>();
+        GameManager[] gms = GameObject.FindObjectsOfType<GameManager>();
+        //get only the gameManager that contains info!
+        foreach(GameManager g in gms)
+        {
+            if(g.isInitialize())
+            {
+                m_gm = g;
+            }
+        }
+        m_timeScale = 1f;
         GameManager.onScoreChanged += updateScore;
         GameManager.onCountDownChanged += updateTime;
-        //Player.onPlayerHit += updateLives;
         Player.onPlayerAddLive += updateLives;
         if(pausePanel)
         {
@@ -65,6 +73,7 @@ public class GUIAndInputManager : MonoBehaviour {
             secondLiveF = livesImages[1];
             thirdLiveF = livesImages[2];
             moreLivesF = fPlayerLives.GetComponentInChildren<Text>();
+            moreLivesF.gameObject.SetActive(false);
         }
         sPlayerLives = GameObject.Find("LivesSecond");
         if (sPlayerLives != null)
@@ -75,8 +84,9 @@ public class GUIAndInputManager : MonoBehaviour {
             secondLiveS = livesImages[1];
             thirdLiveS = livesImages[2];
             moreLivesS = sPlayerLives.GetComponentInChildren<Text>();
+            moreLivesS.gameObject.SetActive(false);
         }
-
+        //hideLives();
 
         Player[] pl = FindObjectsOfType<Player>();
         foreach(Player p in pl)
@@ -93,8 +103,26 @@ public class GUIAndInputManager : MonoBehaviour {
     {
         GameManager.onScoreChanged -= updateScore;
         GameManager.onCountDownChanged -= updateTime;
+        Player.onPlayerAddLive -= updateLives;
     }
 
+    public void hideLives()
+    {
+        if(fPlayerLives)
+        {
+            firstLiveF.gameObject.SetActive(false);
+            secondLiveF.gameObject.SetActive(false);
+            thirdLiveF.gameObject.SetActive(false);
+            moreLivesF.gameObject.SetActive(false);
+        }
+        if(sPlayerLives)
+        {
+            firstLiveS.gameObject.SetActive(false);
+            secondLiveS.gameObject.SetActive(false);
+            thirdLiveS.gameObject.SetActive(false);
+            moreLivesS.gameObject.SetActive(false);
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -127,7 +155,10 @@ public class GUIAndInputManager : MonoBehaviour {
     public void restartGame()
     {
         //hideMenu
-        Time.timeScale = m_timeScale;
+        if(m_timeScale != 0f)
+        {
+            Time.timeScale = m_timeScale;
+        }
         m_onPause = false;
         m_gm.restartGame();
     }
@@ -136,16 +167,17 @@ public class GUIAndInputManager : MonoBehaviour {
     {
         winTextPanel.transform.parent.gameObject.SetActive(true);
         countDownText.text = "5";
-        InvokeRepeating("decreaseCountDown", 0.0f, 1.0f);
+        InvokeRepeating("decreaseCountDownForWin", 0.0f, 1.0f);
     }
 
-    void decreaseCountDown()
+    void decreaseCountDownForWin()
     {
         int countDown = int.Parse(countDownText.text);
-        if (countDown == 0)
+        if (countDown == 1)
         {
             GameObject.FindObjectOfType<LevelManager>().LoadNextLevel();
             GameObject.FindObjectOfType<GameManager>().setRandomSong();
+            GameObject.FindObjectOfType<GameManager>().removeObservers();
         }
         else
         {
@@ -159,6 +191,7 @@ public class GUIAndInputManager : MonoBehaviour {
     /// </summary>
     public void showLosePanel()
     {
+        hideLives();
         losePanel.SetActive(true);
         Time.timeScale = 0.0f;
     }
@@ -192,7 +225,6 @@ public class GUIAndInputManager : MonoBehaviour {
         {
             //FirstPlayer
             int lives = m_gm.getLivesFrom(player);
-            moreLivesF.gameObject.SetActive(false);
             if (lives < 4)
             {
                 //Images
@@ -213,10 +245,12 @@ public class GUIAndInputManager : MonoBehaviour {
                     thirdLiveF.gameObject.SetActive(true);
                 }
                 moreLivesF.gameObject.SetActive(false);
+                moreLivesF.GetComponent<Text>().gameObject.SetActive(false);
             }
             else
             {
                 moreLivesF.gameObject.SetActive(true);
+                moreLivesF.GetComponent<Text>().gameObject.SetActive(true);
                 //number
                 int extraLives = lives - 3;
                 moreLivesF.text = "x" + extraLives.ToString();

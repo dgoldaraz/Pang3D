@@ -14,6 +14,7 @@ public class BreakableWall : MonoBehaviour
     bool isDestroyed;
 
     public AudioClip wallBreak;
+    public int points = 50;
 
 
     void OnCollisionEnter(Collision coll)
@@ -22,6 +23,7 @@ public class BreakableWall : MonoBehaviour
         {
             isDestroyed = true;
             FindObjectOfType<GameManager>().playSound(wallBreak);
+            FindObjectOfType<GameManager>().addPoints(points);
             if(Random.value <= randomPercentage)
             {
                 Instantiate(ItemWhenSplit, transform.position, Quaternion.identity);
