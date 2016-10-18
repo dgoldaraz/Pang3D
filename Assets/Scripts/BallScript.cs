@@ -303,14 +303,18 @@ public class BallScript : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Shield"))
+        if(other.gameObject.CompareTag("Shield") || other.gameObject.CompareTag("Elevator"))
         {
             if(m_rigidBody)
             {
                 m_rigidBody.AddForce(m_rigidBody.velocity * -2.0f, ForceMode.Impulse);
             }
             //Remove the shield
-            other.GetComponentInParent<Player>().setShield(false);
+            if(other.gameObject.CompareTag("Shield"))
+            {
+                other.GetComponentInParent<Player>().setShield(false);
+            }
+            
         }
     }
 

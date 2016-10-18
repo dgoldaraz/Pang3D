@@ -137,11 +137,14 @@ public class GUIAndInputManager : MonoBehaviour {
     {
         if (!m_onPause)
         {
-            //Show Menu
-            m_timeScale = Time.timeScale;
-            Time.timeScale = 0.0f;
-            m_onPause = true;
-            pausePanel.SetActive(true);
+             if(!losePanel.activeInHierarchy && !winTextPanel.gameObject.activeInHierarchy)
+            {
+                //Show Menu
+                m_timeScale = Time.timeScale;
+                Time.timeScale = 0.0f;
+                m_onPause = true;
+                pausePanel.SetActive(true);
+            }
         }
         else
         {
